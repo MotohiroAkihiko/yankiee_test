@@ -53,10 +53,9 @@
 			<td><?php echo $row['id']; ?></td>
 			<td><?php echo $row['publish_start_date']; ?></td>
 			<td><?php echo $row['publish_end_date']; ?></td>
-			<td><?php echo mb_strimwidth($row['info_title'], 0, 30, '...');?></td>
+			<td><?php echo Html::anchor('admin/info/edit/'.$row['id'], mb_strimwidth($row['info_title'], 0, 30, '...')) ?></td>
 			<td><?php echo mb_strimwidth($row['info_details'], 0, 60, '...'); ?></td>
 			<td><?php echo $row['upd_date']; ?></td>
-			<td><?php echo Html::anchor('admin/info/edit/'.$row['id'], '編集', array('class' => 'action button-green smaller')) ?></td>
 		</tr>
 		<?php endforeach; ?>
 	</tbody>
