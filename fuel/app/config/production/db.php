@@ -4,14 +4,14 @@
  */
 
 return array(
-	'default' => array(
-		'type'	=> 'pdo',
-		'connection'=> array(
-			'dsn'		=> 'pgsql:host=localhost;dbname=yankee_test',
-			'username'	=> 'postgres',
-			'password'	=> '',
-			),
-		'charset'	=> NULL,
-		'identifier' => "\"" /* for PostgreSQL */
-	),
+    'default' => array(
+        'type'	=> 'pdo',
+        'connection'=> array(
+            'dsn'		=> 'pgsql:host=localhost;dbname=yankiee_test',
+            'username'	=> 'postgres',
+            'password'	=> '4qualia',
+        ),
+        'charset'	=> NULL,
+        'identifier' => "\"" /* for PostgreSQL */
+    ),
 );
