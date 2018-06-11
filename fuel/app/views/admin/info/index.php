@@ -17,6 +17,7 @@
 
 <?php echo Form::open( array('method' => 'get') ); ?>
 	<div class="flakes-search">
+		<?php echo Form::input('keyword_id', Input::get('keyword_id'), array('class' => 'search-box', 'placeholder' => 'IDで検索', 'autofocus')); ?>
 		<?php echo Form::input('keyword', Input::get('keyword'), array('class' => 'search-box', 'placeholder' => 'お知らせタイトル または お知らせ内容で検索', 'autofocus')); ?>
 		<div class="filters">
 			<label class="filter-checkbox">
