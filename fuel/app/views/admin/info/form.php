@@ -31,6 +31,12 @@
 							<?php echo Form::textarea('info_details', Input::post('info_details', isset($dbRow) ? $dbRow->info_details : '<p style=" margin-right:auto; margin-left:auto; width:80%;"> ｛メッセージ文面｝</p> <div style="text-align:center; padding-top:35px; padding-bottom:15px; "> <a href="<?=$tagObj->getUrl(\'｛リンクURL｝\')?>"> <?=$tagObj->getImgClass(\'｛画像ボタンURL｝\',\'\')?></a></div>'), array('rows' => 6)); ?>
 						</div>
 					</div>
+					<div data-row-span="1">
+						<div data-field-span="1">
+							<label>お知らせカテゴリ<span class="required">(※)</span></label>
+							<?php echo Form::input('info_category', Input::post('info_category', isset($dbRow) ? $dbRow->info_category : '')); ?>
+						</div>
+					</div>
 				</fieldset>
 		</div>
 		<div class="span-3">

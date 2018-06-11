@@ -47,3 +47,20 @@ WARNING - 2018-06-11 10:50:53 --> Fuel\Core\Fuel::init - The configured locale j
 WARNING - 2018-06-11 10:51:01 --> Fuel\Core\Fuel::init - The configured locale ja_JP.utf8 is not installed on your system.
 WARNING - 2018-06-11 10:51:04 --> Fuel\Core\Fuel::init - The configured locale ja_JP.utf8 is not installed on your system.
 WARNING - 2018-06-11 10:51:06 --> Fuel\Core\Fuel::init - The configured locale ja_JP.utf8 is not installed on your system.
+WARNING - 2018-06-11 11:02:59 --> Fuel\Core\Fuel::init - The configured locale ja_JP.utf8 is not installed on your system.
+WARNING - 2018-06-11 11:03:02 --> Fuel\Core\Fuel::init - The configured locale ja_JP.utf8 is not installed on your system.
+ERROR - 2018-06-11 11:03:02 --> Error - Property "info_category" not found for Model_Info. in C:\xampp\fuelphp\public\net_j-mobile_yankee-ausp-adm\trunk\lib\fuel\packages\orm\classes\model.php on line 1134
+WARNING - 2018-06-11 11:03:04 --> Fuel\Core\Fuel::init - The configured locale ja_JP.utf8 is not installed on your system.
+WARNING - 2018-06-11 11:03:05 --> Fuel\Core\Fuel::init - The configured locale ja_JP.utf8 is not installed on your system.
+WARNING - 2018-06-11 11:03:07 --> Fuel\Core\Fuel::init - The configured locale ja_JP.utf8 is not installed on your system.
+WARNING - 2018-06-11 11:18:00 --> Fuel\Core\Fuel::init - The configured locale ja_JP.utf8 is not installed on your system.
+WARNING - 2018-06-11 11:18:02 --> Fuel\Core\Fuel::init - The configured locale ja_JP.utf8 is not installed on your system.
+WARNING - 2018-06-11 11:18:03 --> Fuel\Core\Fuel::init - The configured locale ja_JP.utf8 is not installed on your system.
+WARNING - 2018-06-11 11:18:04 --> Fuel\Core\Fuel::init - The configured locale ja_JP.utf8 is not installed on your system.
+WARNING - 2018-06-11 11:18:06 --> Fuel\Core\Fuel::init - The configured locale ja_JP.utf8 is not installed on your system.
+WARNING - 2018-06-11 11:18:08 --> Fuel\Core\Fuel::init - The configured locale ja_JP.utf8 is not installed on your system.
+WARNING - 2018-06-11 11:18:11 --> Fuel\Core\Fuel::init - The configured locale ja_JP.utf8 is not installed on your system.
+WARNING - 2018-06-11 11:18:13 --> Fuel\Core\Fuel::init - The configured locale ja_JP.utf8 is not installed on your system.
+WARNING - 2018-06-11 11:18:27 --> Fuel\Core\Fuel::init - The configured locale ja_JP.utf8 is not installed on your system.
+WARNING - 2018-06-11 11:19:02 --> Fuel\Core\Fuel::init - The configured locale ja_JP.utf8 is not installed on your system.
+WARNING - 2018-06-11 11:19:03 --> Fuel\Core\Fuel::init - The configured locale ja_JP.utf8 is not installed on your system.

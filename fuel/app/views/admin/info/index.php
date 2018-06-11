@@ -57,6 +57,7 @@
 			<td><?php echo Html::anchor('admin/info/edit/'.$row['id'], mb_strimwidth($row['info_title'], 0, 30, '...')) ?></td>
 			<td><?php echo mb_strimwidth($row['info_details'], 0, 60, '...'); ?></td>
 			<td><?php echo $row['upd_date']; ?></td>
+			<td><?php echo $row['info_category']; ?></td>
 		</tr>
 		<?php endforeach; ?>
 	</tbody>

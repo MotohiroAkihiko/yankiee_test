@@ -98,6 +98,7 @@ class Controller_Admin_Info extends Controller_Admin{
 					'del_flg' => 0,
 					'reg_date' => date('Y-m-d H:i:s'),
 					'upd_date' => date('Y-m-d H:i:s'),
+				    'info_category' => Input::post('info_category'),
 				));
 
 				if ( $model->save() ) {
@@ -142,6 +143,7 @@ class Controller_Admin_Info extends Controller_Admin{
 				$model->publish_start_date = Common_Util::format_datetime_input2db(Input::post('publish_start_date'));
 				$model->publish_end_date = Input::post('publish_end_date') ? Common_Util::format_datetime_input2db(Input::post('publish_end_date'), '59') : NULL;
 				$model->upd_date = date('Y-m-d H:i:s');
+				$model->info_category = Input::post('info_category');
 
 				if ( $model->save() ) {
 					Session::set_flash('success', '「'.$model->info_title.'」を更新しました。');
