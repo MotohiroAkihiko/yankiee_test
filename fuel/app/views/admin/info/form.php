@@ -51,7 +51,7 @@
 				</fieldset>
 		</div>
 	</div>
-	
+
 	<br>
 	<div class="flakes-actions-bar">
 		<?php echo Form::submit(array('value'=>'保存', 'name'=>'submit', 'class' => 'action button-green bigger left')); ?>
@@ -60,7 +60,7 @@
 		<?php echo Html::anchor('javascript:void(0);', '削除', array('class' => 'action button-red bigger right', 'id' => 'button-delete')) ?>
 		<?php endif; ?>
 	</div>
-	
+
 <?php echo Form::close(); ?>
 
 <p class="flakes-message tip">

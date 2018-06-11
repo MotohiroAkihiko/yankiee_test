@@ -13,6 +13,7 @@ class Controller_Admin_Info extends Controller_Admin{
 		// 再検索URL生成用パラメータ
 		$param = array();
 		!empty($keyword) and $param['keyword'] = $keyword;
+		!empty($keyword_id) and $param['keyword_id'] = $keyword_id;
 		!empty($pub) and $param['pub'] = $pub;
 
 		// リストデータ取得クエリ
