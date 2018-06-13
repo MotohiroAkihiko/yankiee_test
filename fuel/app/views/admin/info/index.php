@@ -1,4 +1,4 @@
-
+<?php $user = $current_user['group'];?>
 <h1>お知らせ管理</h1>
 
 <h2>お知らせ一覧</h2>
@@ -50,15 +50,20 @@
 	</thead>
 	<tbody class="list">
 		<?php foreach ( $list as $row ) : ?>
+		<?php echo Form::open(array('action' => $delete_url.$row['id'], 'id' => 'form-delete') ); ?>
 		<tr>
-			<td><?php echo $row['id']; ?></td>
+			<td><?php echo Form::hidden('id', $row['id'], $attributes = array()).Form::label($row['id'], 'id');?></td>
 			<td><?php echo $row['publish_start_date']; ?></td>
 			<td><?php echo $row['publish_end_date']; ?></td>
 			<td><?php echo Html::anchor('admin/info/edit/'.$row['id'], mb_strimwidth($row['info_title'], 0, 30, '...')) ?></td>
 			<td><?php echo mb_strimwidth($row['info_details'], 0, 60, '...'); ?></td>
 			<td><?php echo $row['upd_date']; ?></td>
 			<td><?php echo $row['info_category']; ?></td>
+			<?php if ( $user == 'admin' ) : ?>
+    			<td><?php echo Form::button('delete', '削除', array('class' => 'action button-green smaller'));?></td>
+    		<?php endif; ?>
 		</tr>
+		<?php echo Form::close(); ?>
 		<?php endforeach; ?>
 	</tbody>
 </table>

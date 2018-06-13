@@ -1,7 +1,7 @@
 <?php
 class Controller_Admin_Info extends Controller_Admin{
 
-	public function action_index()
+    public function action_index($id = null)
 	{
 		$data = array();
 
@@ -73,8 +73,10 @@ class Controller_Admin_Info extends Controller_Admin{
 			$rowTmp['info_details'] = strip_tags($row['info_details']);
 			$data['list'][] = $rowTmp;
 		}
-
 		$this->template->title = "お知らせ一覧";
+		$data['delete_url'] = Uri::base().'admin/info/delete/'.$id;
+		Asset::js(array('admin/js/form_common.js', 'admin/js/info_form.js', 'admin/bower_components/datetimepicker/jquery.datetimepicker.js'), array(), 'add_js');
+		Asset::css(array('admin/bower_components/datetimepicker/jquery.datetimepicker.css'), array(), 'add_css');
 		$this->template->content = View::forge('admin/info/index', $data);
 	}
 
@@ -175,16 +177,16 @@ class Controller_Admin_Info extends Controller_Admin{
 	{
 		if (!is_numeric($id) || $model = Model_Info::find($id)) {
 
-			$model->del_flg = 1;
-			$model->upd_date = date('Y-m-d H:i:s');
+ 			$model->del_flg = 1;
+ 			$model->upd_date = date('Y-m-d H:i:s');
 
-			if ( $model->save() ) {
-				Session::set_flash('success', '「'.$model->info_title.'」を削除しました。');
-			} else {
+ 			if ( $model->save() ) {
+ 				Session::set_flash('success', '「'.$model->info_title.'」を削除しました。');
+ 			} else {
 				Session::set_flash('error', '削除処理に失敗しました。');
-			}
-		} else {
-			Session::set_flash('error', '指定されたデータは存在しません。');
+ 			}
+ 		} else {
+ 			Session::set_flash('error', '指定されたデータは存在しません。');
 		}
 
 		Response::redirect('admin/info');
