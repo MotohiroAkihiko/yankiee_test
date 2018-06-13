@@ -1,7 +1,7 @@
 <?php
 class Controller_Admin_Info extends Controller_Admin{
 
-    public function action_index($id = null)
+    public function action_index()
 	{
 		$data = array();
 
@@ -74,7 +74,7 @@ class Controller_Admin_Info extends Controller_Admin{
 			$data['list'][] = $rowTmp;
 		}
 		$this->template->title = "お知らせ一覧";
-		$data['delete_url'] = Uri::base().'admin/info/delete/'.$id;
+		$data['delete_url'] = Uri::base().'admin/info/delete/';
 		Asset::js(array('admin/js/form_common.js', 'admin/js/info_form.js', 'admin/bower_components/datetimepicker/jquery.datetimepicker.js'), array(), 'add_js');
 		Asset::css(array('admin/bower_components/datetimepicker/jquery.datetimepicker.css'), array(), 'add_css');
 		$this->template->content = View::forge('admin/info/index', $data);
