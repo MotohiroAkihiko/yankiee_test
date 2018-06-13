@@ -60,7 +60,7 @@
 			<td><?php echo $row['upd_date']; ?></td>
 			<td><?php echo $row['info_category']; ?></td>
 			<?php if ( $user == 'admin' ) : ?>
-    			<td><?php echo Form::button('delete', '削除', array('class' => 'action button-green smaller'));?></td>
+    			<td><?php echo Form::button('delete', '削除', array('class' => 'action button-green smaller index-button'));?></td>
     		<?php endif; ?>
 		</tr>
 		<?php echo Form::close(); ?>
