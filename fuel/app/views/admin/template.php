@@ -30,27 +30,28 @@
 
 		<?php if ( !is_null($current_user) ) : ?>
 		<div class="flakes-navigation menu">
-			
+
 			<a href="index.html" class="logo">
 				<?php echo Asset::img('admin/img/logo.png', array('style' => 'width:200px;')); ?>
 			</a>
-			
+
 			<ul>
 				<li class="title">
 					<?php echo $current_user['name'] ?>さんがログイン中<br>
 					<div class="<?php echo Fuel::$env == Fuel::PRODUCTION  ? 'site_prod' : 'site_dev'; ?>">[<?php echo Fuel::$env == Fuel::PRODUCTION  ? '本番サイト' : '開発サイト'; ?>]</div>
 				</li>
 			</ul>
-			
+
 			<ul>
 				<li class="title">メインメニュー</li>
 				<li><?php echo Html::anchor('admin/dashboard', 'ダッシュボード') ?></li>
 				<li><?php echo Html::anchor('admin/user', 'ユーザー情報') ?></li>
 				<li><?php echo Html::anchor('admin/info', 'お知らせ管理') ?></li>
+				<li><?php echo Html::anchor('admin/item', 'アイテムマスタ管理') ?></li>
 				<li><?php echo Html::anchor('admin/push', 'Push通知管理') ?></li>
 				<li><?php echo Html::anchor('admin/dailymission', 'デイリーミッション管理') ?></li>
 			</ul>
-			
+
 			<?php if ( $current_user['group'] == 'admin' || $current_user['group'] == '4q' ) : ?>
 			<ul>
 				<li class="title">4Q運用メニュー</li>
@@ -64,25 +65,25 @@
 				<li><?php echo Html::anchor('admin/tools/info', 'お知らせ一括登録用SQL生成') ?></li>
 			</ul>
 			<?php endif; ?>
-			
+
 			<p class="foot">
 				<?php echo Html::anchor('admin/logout', 'ログアウト', array('class' => 'action button-gray bigger')) ?>
 			</p>
 		</div>
 		<?php endif; ?>
-		
+
 		<div class="flakes-content">
-		
+
 			<div class="flakes-mobile-top-bar">
 				<a href="" class="logo-wrap">
 					<?php echo Asset::img('admin/img/logo.png', array('style' => 'height:30px;')); ?>
 				</a>
-				
+
 				<a href="" class="navigation-expand-target">
 					<?php echo Asset::img('admin/img/site-wide/navigation-expand-target.png', array('style' => 'height:30px;')); ?>
 				</a>
 			</div>
-			
+
 			<div class="view-wrap">
 				<?php echo $content; ?>
 			</div>
