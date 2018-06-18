@@ -16,7 +16,7 @@ class Validation extends \Fuel\Core\Validation
     {
         return Validation::_empty($val) || (MBSTRING ? mb_strwidth($val) : strlen($val)*2) >= $length;
     }
- 
+
     /**
      * Maximum string width
      *
@@ -28,7 +28,7 @@ class Validation extends \Fuel\Core\Validation
     {
         return Validation::_empty($val) || (MBSTRING ? mb_strwidth($val) : strlen($val)*2) <= $length;
     }
- 
+
     /**
      * Exact string width
      *
@@ -39,5 +39,17 @@ class Validation extends \Fuel\Core\Validation
     public static function _validation_mb_exact_length($val, $length)
     {
         return Validation::_empty($val) || (MBSTRING ? mb_strwidth($val) : strlen($val)*2) == $length;
+    }
+
+    /**
+     * form_error
+     *
+     * @param string
+     * @param int
+     * @return bool
+     */
+    public static function _validation_form_error($val)
+    {
+        return Validation::_empty($val) || !preg_match("/うんこ/", $val);
     }
 }
