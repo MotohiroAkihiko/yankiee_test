@@ -145,9 +145,9 @@ class Controller_Admin_Item extends Controller_Admin{
 				$model->publish_start_date = Common_Util::format_datetime_input2db(Input::post('publish_start_date'));
 				$model->publish_end_date = Input::post('publish_end_date') ? Common_Util::format_datetime_input2db(Input::post('publish_end_date'), '59') : NULL;
 				$model->upd_date = date('Y-m-d H:i:s');
-				$model->item_category_id = Input::post('item_category_id');
-				$model->item_expire_seconds = Input::post('item_expire_seconds');
-				$model->item_point_up_rate = Input::post('item_point_up_rate');
+				$model->item_category_id = mb_convert_kana(Input::post('item_category_id'), 'kvrn');
+				$model->item_expire_seconds = mb_convert_kana(Input::post('item_expire_seconds'), 'kvrn');
+				$model->item_point_up_rate = mb_convert_kana(Input::post('item_point_up_rate'), 'kvrn');
 
 				if ( $model->save() ) {
 					Session::set_flash('success', '「'.$model->item_name.'」を更新しました。');
