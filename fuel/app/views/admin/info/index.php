@@ -44,8 +44,8 @@
 			<td>公開期間（終了）</td>
 			<td>お知らせタイトル</td>
 			<td>お知らせ内容</td>
+			<td>お知らせカテゴリ</td>
 			<td>最終更新日時</td>
-			<td></td>
 		</tr>
 	</thead>
 	<tbody class="list">
@@ -57,8 +57,8 @@
 			<td><?php echo $row['publish_end_date']; ?></td>
 			<td><?php echo Html::anchor('admin/info/edit/'.$row['id'], mb_strimwidth($row['info_title'], 0, 30, '...')) ?></td>
 			<td><?php echo mb_strimwidth($row['info_details'], 0, 60, '...'); ?></td>
-			<td><?php echo $row['upd_date']; ?></td>
 			<td><?php echo $row['info_category']; ?></td>
+			<td><?php echo $row['upd_date']; ?></td>
 			<?php if ( $user == 'admin' ) : ?>
     			<td><?php echo Form::button('delete', '削除', array('class' => 'action button-green smaller index-button'));?></td>
     		<?php endif; ?>
