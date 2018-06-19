@@ -74,6 +74,7 @@ class Controller_Admin_Item extends Controller_Admin{
 			$data['list'][] = $rowTmp;
 		}
 		$this->template->title = "商品一覧";
+		$data['item_category'] = array("1" => "食べ物", "2" => "季節もの", "3" => "ヤンキー");
 		$data['delete_url'] = Uri::base().'admin/item/delete/';
 		Asset::js(array('admin/js/form_common.js', 'admin/js/info_form.js', 'admin/bower_components/datetimepicker/jquery.datetimepicker.js'), array(), 'add_js');
 		Asset::css(array('admin/bower_components/datetimepicker/jquery.datetimepicker.css'), array(), 'add_css');

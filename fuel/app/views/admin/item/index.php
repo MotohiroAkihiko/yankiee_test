@@ -57,7 +57,7 @@
 			<td><?php echo Form::hidden('id', $row['id'], $attributes = array()).Form::label($row['id'], 'id');?></td>
 			<td><?php echo $row['publish_start_date']; ?></td>
 			<td><?php echo $row['publish_end_date']; ?></td>
-			<td><?php echo $row['item_category_id']; ?> </td>
+			<td><?php echo $row['item_category_id'] . '：' . $item_category[$row['item_category_id']]; ?> </td>
 			<td><?php echo Html::anchor('admin/item/edit/'.$row['id'], mb_strimwidth($row['item_name'], 0, 30, '...')) ?></td>
 			<td><?php echo mb_strimwidth($row['item_details'], 0, 30, '...'); ?></td>
 			<td><?php echo $row['item_expire_seconds']; ?>秒(=<?php echo $row['item_expire_seconds']/86400;?>日)</td>
