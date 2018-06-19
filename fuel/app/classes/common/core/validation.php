@@ -50,6 +50,16 @@ class Validation extends \Fuel\Core\Validation
      */
     public static function _validation_form_error($val)
     {
-        return Validation::_empty($val) || !preg_match("/うんこ/", $val);
+        $query = DB::select('*')
+        ->from('ng_word')->execute();
+
+        foreach ( $query as $row ){
+            if(strpos($val,$row['wordname']) !== false){
+                return false;
+            }
+        }
+
+
+
     }
 }
