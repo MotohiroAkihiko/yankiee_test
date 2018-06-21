@@ -93,7 +93,7 @@ class Controller_Admin_Info extends Controller_Admin{
 
 				$model = Model_Info::forge(array(
 					'info_date' => Common_Util::format_datetime_input2db(Input::post('publish_start_date')),
-					'info_title' => Input::post('info_title'),
+				    'info_title' => htmlspecialchars(Input::post('info_title'), ENT_QUOTES, 'UTF-8'),
 					'info_details' => Input::post('info_details'),
 					'publish_start_date' => Common_Util::format_datetime_input2db(Input::post('publish_start_date')),
 					'publish_end_date' => Input::post('publish_end_date') ? Common_Util::format_datetime_input2db(Input::post('publish_end_date'), '59') : NULL,
