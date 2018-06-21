@@ -85,33 +85,51 @@ class Controller_Admin_Item extends Controller_Admin{
 	{
 		$data = array();
 		$errors = array();
+		$files = array();
 
 		if (Input::method() == 'POST') {
 
 			$val = Model_Item::validate('add');
 
-			if ($val->run()) {
+			$config = array(
+			    'path' => DOCROOT.'assets/admin/img/photo/',
+			    'ext_whitelist' => array('img', 'jpg', 'jpeg', 'gif', 'png'),
+			);
 
-				$model = Model_Item::forge(array(
-					'item_name' => Input::post('item_name'),
-					'item_details' => Input::post('item_details'),
-					'publish_start_date' => Common_Util::format_datetime_input2db(Input::post('publish_start_date')),
-					'publish_end_date' => Input::post('publish_end_date') ? Common_Util::format_datetime_input2db(Input::post('publish_end_date'), '59') : NULL,
-					'del_flg' => 0,
-					'reg_date' => date('Y-m-d H:i:s'),
-					'upd_date' => date('Y-m-d H:i:s'),
-				    'item_category_id' => mb_convert_kana(Input::post('item_category_id'), 'kvrn'),
-				    'item_expire_seconds' => mb_convert_kana(Input::post('item_expire_seconds'), 'kvrn'),
-				    'item_point_up_rate' => mb_convert_kana(Input::post('item_point_up_rate'), 'kvrn'),
-				));
+			Upload::process($config);
 
-				if ( $model->save() ) {
-					Session::set_flash('success', '「'.$model->item_name.'」を追加しました。');
-				} else {
-					Session::set_flash('error', e('登録処理が失敗しました。'));
-				}
+			if (Upload::is_valid())
+			{
+			    Upload::save();
 
-				Response::redirect('admin/item');
+    			foreach (Upload::get_files() as $file)
+    			{
+
+    	           if ($val->run())
+    	           {
+
+        				$model = Model_Item::forge(array(
+        					'item_name' => Input::post('item_name'),
+        					'item_details' => Input::post('item_details'),
+        					'publish_start_date' => Common_Util::format_datetime_input2db(Input::post('publish_start_date')),
+        					'publish_end_date' => Input::post('publish_end_date') ? Common_Util::format_datetime_input2db(Input::post('publish_end_date'), '59') : NULL,
+        					'del_flg' => 0,
+        					'reg_date' => date('Y-m-d H:i:s'),
+        					'upd_date' => date('Y-m-d H:i:s'),
+        				    'item_category_id' => mb_convert_kana(Input::post('item_category_id'), 'kvrn'),
+        				    'item_expire_seconds' => mb_convert_kana(Input::post('item_expire_seconds'), 'kvrn'),
+        				    'item_point_up_rate' => mb_convert_kana(Input::post('item_point_up_rate'), 'kvrn'),
+        				    'photo_saved_as' => $file['saved_as'],
+        				));
+
+        				if ( $model->save() ) {
+        					Session::set_flash('success', '「'.$model->item_name.'」を追加しました。');
+        				} else {
+        					Session::set_flash('error', e('登録処理が失敗しました。'));
+        				}
+        	        }
+        			Response::redirect('admin/item');
+        		}
 			}
 
 			$errors = $val->error();
@@ -139,24 +157,42 @@ class Controller_Admin_Item extends Controller_Admin{
 
 			$val = Model_Item::validate('add');
 
-			if ($val->run()) {
 
-				$model->item_name = Input::post('item_name');
-				$model->item_details = Input::post('item_details');
-				$model->publish_start_date = Common_Util::format_datetime_input2db(Input::post('publish_start_date'));
-				$model->publish_end_date = Input::post('publish_end_date') ? Common_Util::format_datetime_input2db(Input::post('publish_end_date'), '59') : NULL;
-				$model->upd_date = date('Y-m-d H:i:s');
-				$model->item_category_id = mb_convert_kana(Input::post('item_category_id'), 'kvrn');
-				$model->item_expire_seconds = mb_convert_kana(Input::post('item_expire_seconds'), 'kvrn');
-				$model->item_point_up_rate = mb_convert_kana(Input::post('item_point_up_rate'), 'kvrn');
+			$config = array(
+			    'path' => DOCROOT.'assets/admin/img/photo/',
+			    'ext_whitelist' => array('img', 'jpg', 'jpeg', 'gif', 'png'),
+			);
 
-				if ( $model->save() ) {
-					Session::set_flash('success', '「'.$model->item_name.'」を更新しました。');
-				} else {
-					Session::set_flash('error', '登録処理に失敗しました。');
-				}
+			Upload::process($config);
 
-				Response::redirect('admin/item');
+			if (Upload::is_valid())
+			{
+			    Upload::save();
+
+			    foreach (Upload::get_files() as $file)
+			    {
+
+        			if ($val->run()) {
+
+        				$model->item_name = Input::post('item_name');
+        				$model->item_details = Input::post('item_details');
+        				$model->publish_start_date = Common_Util::format_datetime_input2db(Input::post('publish_start_date'));
+        				$model->publish_end_date = Input::post('publish_end_date') ? Common_Util::format_datetime_input2db(Input::post('publish_end_date'), '59') : NULL;
+        				$model->upd_date = date('Y-m-d H:i:s');
+        				$model->item_category_id = mb_convert_kana(Input::post('item_category_id'), 'kvrn');
+        				$model->item_expire_seconds = mb_convert_kana(Input::post('item_expire_seconds'), 'kvrn');
+        				$model->item_point_up_rate = mb_convert_kana(Input::post('item_point_up_rate'), 'kvrn');
+        				$model->photo_saved_as = $file['saved_as'];
+
+        				if ( $model->save() ) {
+        					Session::set_flash('success', '「'.$model->item_name.'」を更新しました。');
+        				} else {
+        					Session::set_flash('error', '登録処理に失敗しました。');
+        				}
+
+        				Response::redirect('admin/item');
+        			}
+			    }
 			}
 
 			$errors = $val->error();

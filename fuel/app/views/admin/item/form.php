@@ -14,7 +14,7 @@
 <?php endif; ?>
 <br>
 
-<?php echo Form::open( array('class' => 'grid-form') ); ?>
+<?php echo Form::open( array('class' => 'grid-form','enctype'=>'multipart/form-data','method'=>'post') ); ?>
 	<div class="grid-10 gutter-20">
 		<div class="span-7">
 				<fieldset>
@@ -47,6 +47,15 @@
 						<div data-field-span="1">
 							<label>アイテム有効期限(秒)<span class="required">(※)</span></label>
 							<?php echo Form::input('item_expire_seconds', Input::post('item_expire_seconds', isset($dbRow) ? $dbRow->item_expire_seconds : '')); ?>
+						</div>
+					</div>
+					<div data-row-span="1">
+						<div data-field-span="1">
+							<label>画像アップロード<span class="required">(※)</span></label>
+							<?php echo Form::file('upload'); ?>
+							<?php if ( $mode == 'edit' ) : ?>
+							<img src="/assets/admin/img/photo/<?php echo Input::post('photo_saved_as', isset($dbRow) ? $dbRow->photo_saved_as : '');?>" width="85" height="85">
+							<?php endif; ?>
 						</div>
 					</div>
 				</fieldset>

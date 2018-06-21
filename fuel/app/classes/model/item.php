@@ -16,6 +16,7 @@ class Model_Item extends \Orm\Model
 		'del_flg',
 	    'reg_date',
 	    'upd_date',
+	    'photo_saved_as',
 	);
 
 	public static function validate($factory)

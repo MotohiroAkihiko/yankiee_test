@@ -47,6 +47,7 @@
 			<td>アイテム説明</td>
 			<td>アイテム有効期限(秒)</td>
 			<td>ポイントアップ率</td>
+			<td>アイコン</td>
 			<td>最終更新日時</td>
 		</tr>
 	</thead>
@@ -62,6 +63,7 @@
 			<td><?php echo mb_strimwidth($row['item_details'], 0, 30, '...'); ?></td>
 			<td><?php echo $row['item_expire_seconds']; ?>秒(=<?php echo $row['item_expire_seconds']/86400;?>日)</td>
 			<td><?php echo $row['item_point_up_rate']; ?>%</td>
+			<td> <img src="/assets/admin/img/photo/<?php echo $row['photo_saved_as'];?>" width="85" height="85"> </td>
 			<td><?php echo $row['upd_date']; ?></td>
 			<?php if ( $user == 'admin' ) : ?>
     			<td><?php echo Form::button('delete', '削除', array('class' => 'action button-green smaller index-button'));?></td>
