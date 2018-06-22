@@ -58,8 +58,13 @@ class Validation extends \Fuel\Core\Validation
                 return false;
             }
         }
+    }
 
-
-
+    public static function _validation_date_time(){
+        $start = Input::post('publish_start_date');
+        $end = Input::post('publish_end_date');
+        if($start > $end && $end != ""){
+            return false;
+        }
     }
 }

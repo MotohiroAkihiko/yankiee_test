@@ -23,7 +23,7 @@ class Model_Info extends \Orm\Model
 		$val->add_field('info_title', 'お知らせタイトル', "required|max_length[200]|form_error");
 		$val->add_field('info_details', 'お知らせ内容', "required|max_length[1000]");
 		$val->add_field('publish_start_date', '公開期間（開始）', "required|valid_date[Y-m-d H:i]");
-		$val->add_field('publish_end_date', '公開期間（終了）', "valid_date[Y-m-d H:i]");
+		$val->add_field('publish_end_date', '公開期間（終了）', "valid_date[Y-m-d H:i]|date_time");
 		$val->add_field('info_category', 'お知らせカテゴリ', "required|max_length[10]|form_error");
 
 		return $val;
