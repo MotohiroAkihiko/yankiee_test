@@ -35,7 +35,7 @@ return array(
 	'max_size'			=> 0,
 
 	// list of file extensions that a user is allowed to upload
-	'ext_whitelist'		=> array(),
+    'ext_whitelist'		=> array('img', 'jpg', 'jpeg', 'gif', 'png'),
 
 	// list of file extensions that a user is NOT allowed to upload
 	'ext_blacklist'		=> array(),
