@@ -7,7 +7,7 @@ class Controller_Admin_Item extends Controller_Admin{
 
 		// 入力値取得
 		$keyword = Input::get('keyword');
-		$keyword_id = Input::get('keyword_id');
+		$keyword_id = mb_convert_kana(Input::get('keyword_id'), 'kvrn');
 		$pub = Input::get('pub');
 
 		// 再検索URL生成用パラメータ
@@ -31,12 +31,15 @@ class Controller_Admin_Item extends Controller_Admin{
 		}
 
 		// キーワード検索 ID
-		if ( !empty($keyword_id) ) {
-		    $query->where_open()
-		    ->where('id', mb_convert_kana("$keyword_id", 'kvrn'))
-		    ->where_close();
+		if(preg_match('/[0-9]/',$keyword_id)){
+		    if ( !empty($keyword_id) ) {
+		        $query->where_open()
+		        ->where('id',"$keyword_id")
+		        ->where_close();
+		    }
+		} else if(!preg_match('/[0-9]/',$keyword_id) && $keyword_id != ""){
+		    Session::set_flash('success', 'ID検索に数字以外が入力されてます。');
 		}
-
 		// 公開中のみ表示
 		if ( !empty($pub) ) {
 			$query->where('publish_start_date', '<=', date('Y-m-d H:i:s'))
