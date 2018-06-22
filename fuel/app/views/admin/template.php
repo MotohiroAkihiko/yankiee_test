@@ -75,7 +75,7 @@
 		<div class="flakes-content">
 
 			<div class="flakes-mobile-top-bar">
-				<a href="" class="logo-wrap">
+				<a href="index.html" class="logo-wrap">
 					<?php echo Asset::img('admin/img/logo.png', array('style' => 'height:30px;')); ?>
 				</a>
 
