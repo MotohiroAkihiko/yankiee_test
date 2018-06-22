@@ -112,7 +112,7 @@ class Controller_Admin_Item extends Controller_Admin{
     	           {
 
         				$model = Model_Item::forge(array(
-        					'item_name' => Input::post('item_name'),
+        				    'item_name' => htmlspecialchars(Input::post('item_name'), ENT_QUOTES, 'UTF-8'),
         					'item_details' => Input::post('item_details'),
         					'publish_start_date' => Common_Util::format_datetime_input2db(Input::post('publish_start_date')),
         					'publish_end_date' => Input::post('publish_end_date') ? Common_Util::format_datetime_input2db(Input::post('publish_end_date'), '59') : NULL,
@@ -177,7 +177,7 @@ class Controller_Admin_Item extends Controller_Admin{
 
         			if ($val->run()) {
 
-        				$model->item_name = Input::post('item_name');
+        			    $model->item_name = htmlspecialchars(Input::post('item_name'), ENT_QUOTES, 'UTF-8');
         				$model->item_details = Input::post('item_details');
         				$model->publish_start_date = Common_Util::format_datetime_input2db(Input::post('publish_start_date'));
         				$model->publish_end_date = Input::post('publish_end_date') ? Common_Util::format_datetime_input2db(Input::post('publish_end_date'), '59') : NULL;
