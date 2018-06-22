@@ -6,4 +6,6 @@ return array(
 	'mb_exact_length'    => ':labelは半角換算:param:1文字で入力してください。',
     'form_error'         => ':labelに不適切な内容が入力されています。',
     'date_time'          => '公開期間（終了）が公開期間（開始）より下回ってます。',
+    'category_num'       => '1～3の数値で入力してください。',
+    'item_number'        => ':labelに数字以外が入力されています。',
 );

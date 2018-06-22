@@ -53,11 +53,11 @@ class Validation extends \Fuel\Core\Validation
         $query = DB::select('*')
         ->from('ng_word')->execute();
 
-        foreach ( $query as $row ){
-            if(strpos($val,$row['wordname']) !== false){
-                return false;
-            }
-        }
+            foreach ( $query as $row ){
+                if(strpos($val_,$row['wordname']) !== false){
+                    return false;
+                }
+             }
     }
 
     public static function _validation_date_time(){
@@ -67,4 +67,17 @@ class Validation extends \Fuel\Core\Validation
             return false;
         }
     }
+
+    public static function _validation_item_number($val){
+        if(!preg_match("/[0-9]/", $val)){
+            return false;
+        }
+    }
+
+    public static function _validation_category_num($val){
+        if($val > 3){
+            return false;
+        }
+    }
+
 }
