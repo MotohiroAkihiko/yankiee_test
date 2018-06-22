@@ -144,7 +144,7 @@ class Controller_Admin_Info extends Controller_Admin{
 			if ($val->run()) {
 
 				$model->info_date = Common_Util::format_datetime_input2db(Input::post('publish_start_date'));
-				$model->info_title = Input::post('info_title');
+				$model->info_title =  htmlspecialchars(Input::post('info_title'), ENT_QUOTES, 'UTF-8');
 				$model->info_details = Input::post('info_details');
 				$model->publish_start_date = Common_Util::format_datetime_input2db(Input::post('publish_start_date'));
 				$model->publish_end_date = Input::post('publish_end_date') ? Common_Util::format_datetime_input2db(Input::post('publish_end_date'), '59') : NULL;
