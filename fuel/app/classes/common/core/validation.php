@@ -53,6 +53,8 @@ class Validation extends \Fuel\Core\Validation
         $query = DB::select('*')
         ->from('ng_word')->execute();
 
+        $val_ = preg_replace("/( |　)/", "", $val );
+
             foreach ( $query as $row ){
                 if(strpos($val_,$row['wordname']) !== false){
                     return false;
