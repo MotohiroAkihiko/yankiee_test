@@ -142,6 +142,8 @@ class Controller_Admin_Info extends Controller_Admin{
 			$val = Model_Info::validate('add');
 
 			if ($val->run()) {
+			    DB::query('begin')->execute();
+			    DB::query('select * from tbl_info where id ='.$model->id.' for update')->execute();
 
 				$model->info_date = Common_Util::format_datetime_input2db(Input::post('publish_start_date'));
 				$model->info_title =  htmlspecialchars(Input::post('info_title'), ENT_QUOTES, 'UTF-8');
@@ -153,8 +155,10 @@ class Controller_Admin_Info extends Controller_Admin{
 
 				if ( $model->save() ) {
 					Session::set_flash('success', '「'.$model->info_title.'」を更新しました。');
+					DB::query('commit')->execute();
 				} else {
 					Session::set_flash('error', '登録処理に失敗しました。');
+					DB::query('rollback')->execute();
 				}
 
 				Response::redirect('admin/info');
@@ -181,13 +185,18 @@ class Controller_Admin_Info extends Controller_Admin{
 	{
 		if (!is_numeric($id) || $model = Model_Info::find($id)) {
 
+		    DB::query('begin')->execute();
+		    DB::query('select * from tbl_info where id ='.$model->id.' for update')->execute();
+
  			$model->del_flg = 1;
  			$model->upd_date = date('Y-m-d H:i:s');
 
  			if ( $model->save() ) {
  				Session::set_flash('success', '「'.$model->info_title.'」を削除しました。');
+ 				DB::query('commit')->execute();
  			} else {
 				Session::set_flash('error', '削除処理に失敗しました。');
+				DB::query('rollback')->execute();
  			}
  		} else {
  			Session::set_flash('error', '指定されたデータは存在しません。');
