@@ -76,6 +76,7 @@ class Controller_Admin_Item extends Controller_Admin{
 			$rowTmp['item_details'] = strip_tags($row['item_details']);
 			$data['list'][] = $rowTmp;
 		}
+
 		$this->template->title = "商品一覧";
 		$data['item_category'] = array("1" => "食べ物", "2" => "季節もの", "3" => "ヤンキー");
 		$data['delete_url'] = Uri::base().'admin/item/delete/';
@@ -88,7 +89,6 @@ class Controller_Admin_Item extends Controller_Admin{
 	{
 		$data = array();
 		$errors = array();
-		$files = array();
 
 		if (Input::method() == 'POST') {
 
@@ -98,45 +98,43 @@ class Controller_Admin_Item extends Controller_Admin{
 			    'path' => DOCROOT.'assets/admin/img/photo/',
 			    'ext_whitelist' => array('img', 'jpg', 'jpeg', 'gif', 'png'),
 			);
-
 			Upload::process($config);
 
-			if (Upload::is_valid())
-			{
-			    Upload::save();
+               if ($val->run())
+               {
 
-    			foreach (Upload::get_files() as $file)
-    			{
+                   if (Upload::is_valid())
+                   {
 
-    	           if ($val->run())
-    	           {
+                      Upload::save();
 
-        				$model = Model_Item::forge(array(
-        				    'item_name' => htmlspecialchars(Input::post('item_name'), ENT_QUOTES, 'UTF-8'),
-        					'item_details' => Input::post('item_details'),
-        					'publish_start_date' => Common_Util::format_datetime_input2db(Input::post('publish_start_date')),
-        					'publish_end_date' => Input::post('publish_end_date') ? Common_Util::format_datetime_input2db(Input::post('publish_end_date'), '59') : NULL,
-        					'del_flg' => 0,
-        					'reg_date' => date('Y-m-d H:i:s'),
-        					'upd_date' => date('Y-m-d H:i:s'),
-        				    'item_category_id' => mb_convert_kana(Input::post('item_category_id'), 'kvrn'),
-        				    'item_expire_seconds' => mb_convert_kana(Input::post('item_expire_seconds'), 'kvrn'),
-        				    'item_point_up_rate' => mb_convert_kana(Input::post('item_point_up_rate'), 'kvrn'),
-        				    'photo_saved_as' => $file['saved_as'],
-        				));
+                       foreach (Upload::get_files() as $file)
+                       {
+            				$model = Model_Item::forge(array(
+            				    'item_name' => htmlspecialchars(Input::post('item_name'), ENT_QUOTES, 'UTF-8'),
+            					'item_details' => Input::post('item_details'),
+            					'publish_start_date' => Common_Util::format_datetime_input2db(Input::post('publish_start_date')),
+            					'publish_end_date' => Input::post('publish_end_date') ? Common_Util::format_datetime_input2db(Input::post('publish_end_date'), '59') : NULL,
+            					'del_flg' => 0,
+            					'reg_date' => date('Y-m-d H:i:s'),
+            					'upd_date' => date('Y-m-d H:i:s'),
+            				    'item_category_id' => mb_convert_kana(Input::post('item_category_id'), 'kvrn'),
+            				    'item_expire_seconds' => mb_convert_kana(Input::post('item_expire_seconds'), 'kvrn'),
+            				    'item_point_up_rate' => mb_convert_kana(Input::post('item_point_up_rate'), 'kvrn'),
+            				    'photo_saved_as' => $file['saved_as'],
+            				));
 
-        				if ( $model->save() ) {
-        					Session::set_flash('success', '「'.$model->item_name.'」を追加しました。');
-        				} else {
-        					Session::set_flash('error', e('登録処理が失敗しました。'));
-        				}
-        	        }
-        			Response::redirect('admin/item');
-        		}
-			}
-
+            				if ( $model->save() ) {
+            					Session::set_flash('success', '「'.$model->item_name.'」を追加しました。');
+            				} else {
+            					Session::set_flash('error', e('登録処理が失敗しました。'));
+            				}
+            	           Response::redirect('admin/item');
+                        }
+                    }
+    			}
 			$errors = $val->error();
-		}
+		  }
 
 		$this->template->set_global('errors', $errors, false);
 
@@ -160,45 +158,47 @@ class Controller_Admin_Item extends Controller_Admin{
 
 			$val = Model_Item::validate('add');
 
+    			if ($val->run()) {
 
-			$config = array(
-			    'path' => DOCROOT.'assets/admin/img/photo/',
-			    'ext_whitelist' => array('img', 'jpg', 'jpeg', 'gif', 'png'),
-			);
+    			    $config = array(
+    			        'path' => DOCROOT.'assets/admin/img/photo/',
+    			        'ext_whitelist' => array('img', 'jpg', 'jpeg', 'gif', 'png'),
+    			    );
 
-			Upload::process($config);
+    			    Upload::process($config);
 
-			if (Upload::is_valid())
-			{
-			    Upload::save();
+    			    if (Upload::is_valid())
+    			    {
+    			        Upload::save();
 
-			    foreach (Upload::get_files() as $file)
-			    {
+    			        foreach (Upload::get_files() as $file)
+    			        {
+    			            DB::query('begin')->execute();
+    			            DB::query('select * from mst_item where id ='.$model->id.' for update')->execute();
 
-        			if ($val->run()) {
+            			    $model->item_name = htmlspecialchars(Input::post('item_name'), ENT_QUOTES, 'UTF-8');
+            				$model->item_details = Input::post('item_details');
+            				$model->publish_start_date = Common_Util::format_datetime_input2db(Input::post('publish_start_date'));
+            				$model->publish_end_date = Input::post('publish_end_date') ? Common_Util::format_datetime_input2db(Input::post('publish_end_date'), '59') : NULL;
+            				$model->upd_date = date('Y-m-d H:i:s');
+            				$model->item_category_id = mb_convert_kana(Input::post('item_category_id'), 'kvrn');
+            				$model->item_expire_seconds = mb_convert_kana(Input::post('item_expire_seconds'), 'kvrn');
+            				$model->item_point_up_rate = mb_convert_kana(Input::post('item_point_up_rate'), 'kvrn');
+            				$model->photo_saved_as = $file['saved_as'];
 
-        			    $model->item_name = htmlspecialchars(Input::post('item_name'), ENT_QUOTES, 'UTF-8');
-        				$model->item_details = Input::post('item_details');
-        				$model->publish_start_date = Common_Util::format_datetime_input2db(Input::post('publish_start_date'));
-        				$model->publish_end_date = Input::post('publish_end_date') ? Common_Util::format_datetime_input2db(Input::post('publish_end_date'), '59') : NULL;
-        				$model->upd_date = date('Y-m-d H:i:s');
-        				$model->item_category_id = mb_convert_kana(Input::post('item_category_id'), 'kvrn');
-        				$model->item_expire_seconds = mb_convert_kana(Input::post('item_expire_seconds'), 'kvrn');
-        				$model->item_point_up_rate = mb_convert_kana(Input::post('item_point_up_rate'), 'kvrn');
-        				$model->photo_saved_as = $file['saved_as'];
-
-        				if ( $model->save() ) {
-        					Session::set_flash('success', '「'.$model->item_name.'」を更新しました。');
-        				} else {
-        					Session::set_flash('error', '登録処理に失敗しました。');
-        				}
-
-        				Response::redirect('admin/item');
-        			}
-			    }
+            				if ( $model->save() ) {
+            					Session::set_flash('success', '「'.$model->item_name.'」を更新しました。');
+            					DB::query('commit')->execute();
+            				} else {
+            					Session::set_flash('error', '登録処理に失敗しました。');
+            					DB::query('rollback')->execute();
+            				}
+            				Response::redirect('admin/item');
+            			}
+	                 }
 			}
-
 			$errors = $val->error();
+
 		} else {
 			$model->publish_start_date = Common_Util::format_datetime_db2input($model->publish_start_date);
 			$model->publish_end_date = !empty($model->publish_end_date) ? Common_Util::format_datetime_db2input($model->publish_end_date) : NULL;
@@ -217,22 +217,25 @@ class Controller_Admin_Item extends Controller_Admin{
 
 	public function action_delete($id = null)
 	{
-		if (!is_numeric($id) || $model = Model_Item::find($id)) {
+
+	    if (!is_numeric($id) || $model = Model_Item::find($id)) {
+
+		    DB::query('begin')->execute();
+		    DB::query('select * from mst_item where id ='.$model->id.'for update')->execute();
 
  			$model->del_flg = 1;
  			$model->upd_date = date('Y-m-d H:i:s');
 
  			if ( $model->save() ) {
  				Session::set_flash('success', '「'.$model->item_name.'」を削除しました。');
+ 				DB::query('commit')->execute();
  			} else {
 				Session::set_flash('error', '削除処理に失敗しました。');
+				DB::query('rollback')->execute();
  			}
  		} else {
  			Session::set_flash('error', '指定されたデータは存在しません。');
 		}
-
 		Response::redirect('admin/item');
 	}
-
-
 }
