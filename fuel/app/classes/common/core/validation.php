@@ -71,7 +71,7 @@ class Validation extends \Fuel\Core\Validation
     }
 
     public static function _validation_item_number($val){
-        if(!preg_match("/[0-9]/", $val)){
+        if(!preg_match("/[0-9０-９]/", $val)){
             return false;
         }
     }
