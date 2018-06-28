@@ -80,6 +80,7 @@ class Controller_Admin_Item extends Controller_Admin{
 		$this->template->title = "商品一覧";
 		$data['item_category'] = array("1" => "食べ物", "2" => "季節もの", "3" => "ヤンキー");
 		$data['delete_url'] = Uri::base().'admin/item/delete/';
+		$data['download_url'] = Uri::base().'admin/item/csv/';
 		Asset::js(array('admin/js/form_common.js', 'admin/js/item_form.js', 'admin/bower_components/datetimepicker/jquery.datetimepicker.js'), array(), 'add_js');
 		Asset::css(array('admin/bower_components/datetimepicker/jquery.datetimepicker.css'), array(), 'add_css');
 		$this->template->content = View::forge('admin/item/index', $data);
@@ -265,4 +266,30 @@ class Controller_Admin_Item extends Controller_Admin{
 		}
 		Response::redirect('admin/item');
 	}
+
+	public static function action_csv(){
+
+	    $data = array(0,1,2,3,4);
+
+	    // Response
+	    $response = new Response();
+
+	    // content-type: csv
+	    $response->set_header('Content-Type', 'application/csv');
+
+	    // ファイル名をセット
+	    $response->set_header('Content-Disposition', 'attachment; filename="item_csv"');
+
+	    // キャッシュをなしに
+	    $response->set_header('Cache-Control', 'no-cache, no-store, max-age=0, must-revalidate');
+	    $response->set_header('Expires', 'Mon, 26 Jul 1997 05:00:00 GMT');
+	    $response->set_header('Pragma', 'no-cache');
+
+	    // CSVを出力
+	    echo Format::forge($data)->to_csv();
+
+	    // Response
+	    return $response;
+	}
+
 }

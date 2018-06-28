@@ -73,7 +73,11 @@
 		<?php endforeach; ?>
 	</tbody>
 </table>
-
+<?php if( $list >= 1):?>
+    <?php echo Form::open(array('action' => $download_url, 'id' => 'download') ); ?>
+    	<?php echo Html::anchor('javascript:void(0);', 'CSVダウンロード', array('class' => 'csv_download')) ?>
+    <?php echo Form::close(); ?>
+<?php endif;?>
 <div class="flakes-pagination right">
 	<?php echo Pagination::instance('pager')->render();?>
 </div>

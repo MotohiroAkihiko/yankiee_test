@@ -13,6 +13,7 @@ Autoloader::add_classes(array(
 	// Example: 'View' => APPPATH.'classes/view.php',
 	'Validation' => APPPATH.'classes/common/core/validation.php',
     'Database_Query' => APPPATH.'classes/common/core/query.php',
+    'Format' => APPPATH . 'classes/format.php',
 ));
 
 // Register the autoloader
