@@ -47,7 +47,6 @@
 				<li><?php echo Html::anchor('admin/dashboard', 'ダッシュボード') ?></li>
 				<li><?php echo Html::anchor('admin/user', 'ユーザー情報') ?></li>
 				<li><?php echo Html::anchor('admin/info', 'お知らせ管理') ?></li>
-				<li><?php echo Html::anchor('admin/item', 'アイテムマスタ管理') ?></li>
 				<li><?php echo Html::anchor('admin/push', 'Push通知管理') ?></li>
 				<li><?php echo Html::anchor('admin/dailymission', 'デイリーミッション管理') ?></li>
 			</ul>
@@ -57,6 +56,7 @@
 				<li class="title">4Q運用メニュー</li>
 				<li><?php echo Html::anchor('admin/dashboard4q', '運用ダッシュボード') ?></li>
 				<li><?php echo Html::anchor('admin/campaign', 'キャンペーン管理') ?></li>
+				<li><?php echo Html::anchor('admin/item', 'アイテムマスタ管理') ?></li>
 				<li><?php echo Html::anchor('admin/master', '各種マスタ') ?></li>
 				<li><?php echo Html::anchor('admin/manual', '運用マニュアル') ?></li>
 			</ul>
