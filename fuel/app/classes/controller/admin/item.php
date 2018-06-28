@@ -80,7 +80,7 @@ class Controller_Admin_Item extends Controller_Admin{
 		$this->template->title = "商品一覧";
 		$data['item_category'] = array("1" => "食べ物", "2" => "季節もの", "3" => "ヤンキー");
 		$data['delete_url'] = Uri::base().'admin/item/delete/';
-		Asset::js(array('admin/js/form_common.js', 'admin/js/info_form.js', 'admin/bower_components/datetimepicker/jquery.datetimepicker.js'), array(), 'add_js');
+		Asset::js(array('admin/js/form_common.js', 'admin/js/item_form.js', 'admin/bower_components/datetimepicker/jquery.datetimepicker.js'), array(), 'add_js');
 		Asset::css(array('admin/bower_components/datetimepicker/jquery.datetimepicker.css'), array(), 'add_css');
 		$this->template->content = View::forge('admin/item/index', $data);
 	}
@@ -140,7 +140,7 @@ class Controller_Admin_Item extends Controller_Admin{
 
 		$this->template->title = "商品新規登録";
 		$data['mode'] = 'new';
-		Asset::js(array('admin/js/form_common.js', 'admin/js/info_form.js', 'admin/bower_components/datetimepicker/jquery.datetimepicker.js'), array(), 'add_js');
+		Asset::js(array('admin/js/form_common.js', 'admin/js/item_form.js', 'admin/bower_components/datetimepicker/jquery.datetimepicker.js'), array(), 'add_js');
 		Asset::css(array('admin/bower_components/datetimepicker/jquery.datetimepicker.css'), array(), 'add_css');
 		$this->template->content = View::forge('admin/item/form', $data);
 	}
@@ -173,25 +173,40 @@ class Controller_Admin_Item extends Controller_Admin{
 
     			        foreach (Upload::get_files() as $file)
     			        {
-    			            DB::query('begin')->execute();
-    			            DB::query('select * from mst_item where id ='.$model->id.' for update')->execute();
 
-            			    $model->item_name = htmlspecialchars(Input::post('item_name'), ENT_QUOTES, 'UTF-8');
-            				$model->item_details = Input::post('item_details');
-            				$model->publish_start_date = Common_Util::format_datetime_input2db(Input::post('publish_start_date'));
-            				$model->publish_end_date = Input::post('publish_end_date') ? Common_Util::format_datetime_input2db(Input::post('publish_end_date'), '59') : NULL;
-            				$model->upd_date = date('Y-m-d H:i:s');
-            				$model->item_category_id = mb_convert_kana(Input::post('item_category_id'), 'kvrn');
-            				$model->item_expire_seconds = mb_convert_kana(Input::post('item_expire_seconds'), 'kvrn');
-            				$model->item_point_up_rate = mb_convert_kana(Input::post('item_point_up_rate'), 'kvrn');
-            				$model->photo_saved_as = $file['saved_as'];
+    			            try{
+
+        			            DB::start_transaction();
+
+                			    $model->item_name = htmlspecialchars(Input::post('item_name'), ENT_QUOTES, 'UTF-8');
+                				$model->item_details = Input::post('item_details');
+                				$model->publish_start_date = Common_Util::format_datetime_input2db(Input::post('publish_start_date'));
+                				$model->publish_end_date = Input::post('publish_end_date') ? Common_Util::format_datetime_input2db(Input::post('publish_end_date'), '59') : NULL;
+                				$model->upd_date = date('Y-m-d H:i:s');
+                				$model->item_category_id = mb_convert_kana(Input::post('item_category_id'), 'kvrn');
+                				$model->item_expire_seconds = mb_convert_kana(Input::post('item_expire_seconds'), 'kvrn');
+                				$model->item_point_up_rate = mb_convert_kana(Input::post('item_point_up_rate'), 'kvrn');
+                				$model->photo_saved_as = $file['saved_as'];
+
+                				DB::commit_transaction();
+
+    			            }
+    			            catch (Exception $e)
+    			            {
+    			                if(DB::in_transaction()){
+			                    DB::rollback_transaction();
+			                    Session::set_flash('error', '現在編集中です');
+			                    Response::redirect('admin/item');
+
+    			                throw $e;
+    			                }
+    			            }
 
             				if ( $model->save() ) {
             					Session::set_flash('success', '「'.$model->item_name.'」を更新しました。');
-            					DB::query('commit')->execute();
+
             				} else {
             					Session::set_flash('error', '登録処理に失敗しました。');
-            					DB::query('rollback')->execute();
             				}
             				Response::redirect('admin/item');
             			}
@@ -210,7 +225,7 @@ class Controller_Admin_Item extends Controller_Admin{
 		$this->template->title = "商品編集";
 		$data['mode'] = 'edit';
 		$data['delete_url'] = Uri::base().'admin/item/delete/'.$id;
-		Asset::js(array('admin/js/form_common.js', 'admin/js/info_form.js', 'admin/bower_components/datetimepicker/jquery.datetimepicker.js'), array(), 'add_js');
+		Asset::js(array('admin/js/form_common.js', 'admin/js/item_form.js', 'admin/bower_components/datetimepicker/jquery.datetimepicker.js'), array(), 'add_js');
 		Asset::css(array('admin/bower_components/datetimepicker/jquery.datetimepicker.css'), array(), 'add_css');
 		$this->template->content = View::forge('admin/item/form', $data);
 	}
@@ -220,18 +235,30 @@ class Controller_Admin_Item extends Controller_Admin{
 
 	    if (!is_numeric($id) || $model = Model_Item::find($id)) {
 
-		    DB::query('begin')->execute();
-		    DB::query('select * from mst_item where id ='.$model->id.'for update')->execute();
+        try{
+            //DB::query('SET statement_timeout TO 5000')->execute();
+            DB::start_transaction();
+            DB::query('select * from mst_item where id ='.$model->id.' for update')->execute();
 
  			$model->del_flg = 1;
  			$model->upd_date = date('Y-m-d H:i:s');
 
+
+ 			DB::commit_transaction();
+
+	        }
+	        catch (Exception $e)
+	        {
+	            // 未決のトランザクションクエリをロールバックする
+	            DB::rollback_transaction();
+	            Session::set_flash('error', '現在編集中です');
+	            Response::redirect('admin/item');
+	        }
+
  			if ( $model->save() ) {
  				Session::set_flash('success', '「'.$model->item_name.'」を削除しました。');
- 				DB::query('commit')->execute();
  			} else {
 				Session::set_flash('error', '削除処理に失敗しました。');
-				DB::query('rollback')->execute();
  			}
  		} else {
  			Session::set_flash('error', '指定されたデータは存在しません。');

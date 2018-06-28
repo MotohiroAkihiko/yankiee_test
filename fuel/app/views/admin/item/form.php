@@ -1,5 +1,4 @@
 
-
 <h1>アイテムマスタ管理</h1>
 
 <h2>アイテム<?php echo $mode == 'new' ? '新規登録' : '編集'; ?></h2>
@@ -51,11 +50,9 @@
 					</div>
 					<div data-row-span="1">
 						<div data-field-span="1">
-							<label>画像アップロード<span class="required">(※)</span></label>
-							<?php echo Form::file('upload'); ?>
-							<?php if ( $mode == 'edit' ) : ?>
-							<img src="/assets/admin/img/photo/<?php echo Input::post('photo_saved_as', isset($dbRow) ? $dbRow->photo_saved_as : '');?>" width="85" height="85">
-							<?php endif; ?>
+							<label>アイコン<span class="required">(※)</span></label>
+							<?php echo Form::file('upload');?>
+							<div class="preview"></div>
 						</div>
 					</div>
 				</fieldset>
