@@ -269,7 +269,14 @@ class Controller_Admin_Item extends Controller_Admin{
 
 	public static function action_csv(){
 
-	    $data = array(0,1,2,3,4);
+	    $sql = DB::query('select * from mst_item order by id asc')->execute();
+
+	    foreach ( $sql as $row ) {
+            $data[] = array($row['id'],$row['item_name'],$row['item_category_id'],$row['item_details']
+                ,$row['item_point_up_rate'],$row['item_expire_seconds'],$row['publish_start_date']
+                ,$row['publish_end_date'],$row['del_flg'],$row['reg_date'],$row['upd_date']
+                ,$row['photo_saved_as']);
+	    }
 
 	    // Response
 	    $response = new Response();
