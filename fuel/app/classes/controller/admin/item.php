@@ -80,7 +80,8 @@ class Controller_Admin_Item extends Controller_Admin{
 		$this->template->title = "商品一覧";
 		$data['item_category'] = array("1" => "食べ物", "2" => "季節もの", "3" => "ヤンキー");
 		$data['delete_url'] = Uri::base().'admin/item/delete/';
-		$data['download_url'] = Uri::base().'admin/item/csv/';
+		$data['download_url'] = Uri::base().'admin/item/csv_download/';
+		$data['upload_url'] = Uri::base().'admin/item/csv_upload/';
 		Asset::js(array('admin/js/form_common.js', 'admin/js/item_form.js', 'admin/bower_components/datetimepicker/jquery.datetimepicker.js'), array(), 'add_js');
 		Asset::css(array('admin/bower_components/datetimepicker/jquery.datetimepicker.css'), array(), 'add_css');
 		$this->template->content = View::forge('admin/item/index', $data);
@@ -174,7 +175,6 @@ class Controller_Admin_Item extends Controller_Admin{
 
     			        foreach (Upload::get_files() as $file)
     			        {
-
     			            try{
 
         			            DB::start_transaction();
@@ -267,7 +267,7 @@ class Controller_Admin_Item extends Controller_Admin{
 		Response::redirect('admin/item');
 	}
 
-	public static function action_csv(){
+	public static function action_csv_download(){
 
 	    $sql = DB::query('select * from mst_item order by id asc')->execute();
 
@@ -275,7 +275,7 @@ class Controller_Admin_Item extends Controller_Admin{
             $data[] = array($row['id'],$row['item_name'],$row['item_category_id'],$row['item_details']
                 ,$row['item_point_up_rate'],$row['item_expire_seconds'],$row['publish_start_date']
                 ,$row['publish_end_date'],$row['del_flg'],$row['reg_date'],$row['upd_date']
-                ,$row['photo_saved_as']);
+                ,$row['photo_saved_as'],'\r\n');
 	    }
 
 	    // Response
@@ -285,7 +285,7 @@ class Controller_Admin_Item extends Controller_Admin{
 	    $response->set_header('Content-Type', 'application/csv');
 
 	    // ファイル名をセット
-	    $response->set_header('Content-Disposition', 'attachment; filename="item_csv"');
+	    $response->set_header('Content-Disposition', 'attachment; filename="item_data.csv"');
 
 	    // キャッシュをなしに
 	    $response->set_header('Cache-Control', 'no-cache, no-store, max-age=0, must-revalidate');
@@ -297,6 +297,70 @@ class Controller_Admin_Item extends Controller_Admin{
 
 	    // Response
 	    return $response;
+	}
+
+	public function action_csv_upload()
+	{
+	    if (is_uploaded_file($_FILES["csv"]["tmp_name"]))
+	    {
+	        $file_tmp_name = $_FILES["csv"]["tmp_name"];
+	        $file_name = $_FILES["csv"]["name"];
+
+	        //拡張子を判定
+	        if (pathinfo($file_name, PATHINFO_EXTENSION) != 'csv')
+	        {
+	            Session::set_flash('error', 'CSVファイルのみ対応してます。');
+	        }
+	        else
+	        {
+	            // MacのExcelで変換したCSVにも対応するため一旦置換
+	            $buf = file_get_contents($file_tmp_name);
+	            $buf = preg_replace("\r\n|\r|\n","\n", $buf);
+	            $fp = tmpfile();
+	            fwrite($fp, $buf);
+	            rewind($fp);
+
+	            $sql = DB::query('select id from mst_item order by id asc')->execute();
+
+	           try{
+	              DB::start_transaction();
+    	            //配列に変換する
+    	            while (($data = fgetcsv($fp, 0, ",")) !== FALSE)
+    	            {
+    	                mb_convert_variables('UTF-8', 'SJIS-win', $data);
+
+    	                if($data[7] == ""){
+    	                    $data[7] = null;
+    	                }
+
+    	                $rec = array('id' => $data[0], 'item_name' => $data[1], 'item_category_id' => $data[2]
+    	                    , 'item_details' => $data[3], 'item_point_up_rate' => $data[4]
+    	                    , 'item_expire_seconds' => $data[5], 'publish_start_date' => $data[6]
+    	                    , 'publish_end_date' => $data[7], 'del_flg' => $data[8], 'reg_date' => $data[9]
+    	                    , 'upd_date' => $data[10], 'photo_saved_as' => $data[11]
+    	                );
+    	                DB::insert('mst_item')->set($rec)->execute();
+
+    	            }
+
+    	            DB::commit_transaction();
+	                fclose($fp);
+
+	            }catch (Exception $e){
+	                DB::rollback_transaction();
+	                Session::set_flash('error', ''. $e->getMessage().'に不備があります。');
+	                Response::redirect('admin/item');
+	            }
+	          }
+	    }
+	    else
+	    {
+	        Session::set_flash('error', 'ファイルが選択されていません。');
+	    }
+
+	    Response::redirect('admin/item');
+
+
 	}
 
 }

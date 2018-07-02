@@ -73,9 +73,35 @@
 		<?php endforeach; ?>
 	</tbody>
 </table>
+
+<div class="flakes-pagination right">
+	<?php echo Pagination::instance('pager')->render();?>
+</div>
+
+<div class="csv_DL">
 <?php echo Form::open(array('action' => $download_url, 'id' => 'download') ); ?>
 	<?php echo Html::anchor('javascript:void(0);', 'CSVダウンロード', array('class' => 'csv_download')) ?>
 <?php echo Form::close(); ?>
-<div class="flakes-pagination right">
-	<?php echo Pagination::instance('pager')->render();?>
+</div>
+
+<div class="homeIndex box">
+    <div class="box-header">
+        <?php echo Form::open(array("action" => $upload_url,
+            "class"=>"form-horizontal",
+            "enctype"=>"multipart/form-data",
+        )); ?>
+            <!-- .box-body -->
+            <div class="box-body">
+                <div class="form-group">
+                    <?php echo Form::label('CSVファイルを選択してください', 'csv', array('class'=>'col-sm-4 control-label')); ?>
+                    <?php echo Form::file('csv'); ?>
+                </div>
+            </div>
+            <!-- /.box-body -->
+            <div class="box-footer">
+                <?php echo Form::submit('submit', '登録', array('class' => 'btn btn-primary pull-right')); ?>
+            </div>
+            <!-- /.box-footer -->
+        <?php echo Form::close(); ?>
+    </div>
 </div>
