@@ -287,11 +287,6 @@ class Controller_Admin_Item extends Controller_Admin{
 	    // ファイル名をセット
 	    $response->set_header('Content-Disposition', 'attachment; filename="item_data.csv"');
 
-	    // キャッシュをなしに
-	    $response->set_header('Cache-Control', 'no-cache, no-store, max-age=0, must-revalidate');
-	    $response->set_header('Expires', 'Mon, 26 Jul 1997 05:00:00 GMT');
-	    $response->set_header('Pragma', 'no-cache');
-
 	    // CSVを出力
 	    echo Format::forge($data)->to_csv();
 
@@ -320,7 +315,7 @@ class Controller_Admin_Item extends Controller_Admin{
 	            fwrite($fp, $buf);
 	            rewind($fp);
 
-	            $sql = DB::query('select id from mst_item order by id asc')->execute();
+	            $sql = DB::query('select id from mst_item order by id asc')->execute()->as_array('id');
 
 	           try{
 	              DB::start_transaction();
@@ -333,13 +328,25 @@ class Controller_Admin_Item extends Controller_Admin{
     	                    $data[7] = null;
     	                }
 
-    	                $rec = array('id' => $data[0], 'item_name' => $data[1], 'item_category_id' => $data[2]
-    	                    , 'item_details' => $data[3], 'item_point_up_rate' => $data[4]
-    	                    , 'item_expire_seconds' => $data[5], 'publish_start_date' => $data[6]
-    	                    , 'publish_end_date' => $data[7], 'del_flg' => $data[8], 'reg_date' => $data[9]
-    	                    , 'upd_date' => $data[10], 'photo_saved_as' => $data[11]
-    	                );
-    	                DB::insert('mst_item')->set($rec)->execute();
+    	                if(empty($sql[$data[0]]) == true){
+
+        	                $rec1 = array('id' => $data[0], 'item_name' => $data[1], 'item_category_id' => $data[2]
+        	                    , 'item_details' => $data[3], 'item_point_up_rate' => $data[4]
+        	                    , 'item_expire_seconds' => $data[5], 'publish_start_date' => $data[6]
+        	                    , 'publish_end_date' => $data[7], 'del_flg' => $data[8], 'reg_date' => $data[9]
+        	                    , 'upd_date' => $data[10], 'photo_saved_as' => $data[11]
+        	                );
+
+        	                DB::insert('mst_item')->set($rec1)->execute();
+    	                } else {
+    	                    $rec2 = array('item_name' => $data[1], 'item_category_id' => $data[2]
+    	                        , 'item_details' => $data[3], 'item_point_up_rate' => $data[4]
+    	                        , 'item_expire_seconds' => $data[5], 'publish_start_date' => $data[6]
+    	                        , 'publish_end_date' => $data[7], 'del_flg' => $data[8], 'reg_date' => $data[9]
+    	                        , 'upd_date' => $data[10], 'photo_saved_as' => $data[11]
+    	                    );
+    	                    DB::update('mst_item')->set($rec2)->where('id',$data[0])->execute();
+    	                }
 
     	            }
 
@@ -348,7 +355,7 @@ class Controller_Admin_Item extends Controller_Admin{
 
 	            }catch (Exception $e){
 	                DB::rollback_transaction();
-	                Session::set_flash('error', ''. $e->getMessage().'に不備があります。');
+	                Session::set_flash('error', 'CSVファイルに不備があります。');
 	                Response::redirect('admin/item');
 	            }
 	          }
