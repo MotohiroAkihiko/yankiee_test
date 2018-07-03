@@ -328,24 +328,31 @@ class Controller_Admin_Item extends Controller_Admin{
     	                    $data[7] = null;
     	                }
 
-    	                if(empty($sql[$data[0]]) == true){
+    	                if(!empty($data[1]) && !empty($data[2]) && !empty($data[3]) && !empty($data[4])
+    	                    && !empty($data[5]) && !empty($data[6]) && !empty($data[11])){
 
-        	                $rec1 = array('id' => $data[0], 'item_name' => $data[1], 'item_category_id' => $data[2]
-        	                    , 'item_details' => $data[3], 'item_point_up_rate' => $data[4]
-        	                    , 'item_expire_seconds' => $data[5], 'publish_start_date' => $data[6]
-        	                    , 'publish_end_date' => $data[7], 'del_flg' => $data[8], 'reg_date' => $data[9]
-        	                    , 'upd_date' => $data[10], 'photo_saved_as' => $data[11]
-        	                );
+        	                if(empty($sql[$data[0]]) == true){
 
-        	                DB::insert('mst_item')->set($rec1)->execute();
+            	                $rec1 = array('id' => $data[0], 'item_name' => $data[1], 'item_category_id' => $data[2]
+            	                    , 'item_details' => $data[3], 'item_point_up_rate' => $data[4]
+            	                    , 'item_expire_seconds' => $data[5], 'publish_start_date' => $data[6]
+            	                    , 'publish_end_date' => $data[7], 'del_flg' => $data[8], 'reg_date' => $data[9]
+            	                    , 'upd_date' => $data[10], 'photo_saved_as' => $data[11]
+            	                );
+
+            	                DB::insert('mst_item')->set($rec1)->execute();
+        	                } else {
+        	                    $rec2 = array('item_name' => $data[1], 'item_category_id' => $data[2]
+        	                        , 'item_details' => $data[3], 'item_point_up_rate' => $data[4]
+        	                        , 'item_expire_seconds' => $data[5], 'publish_start_date' => $data[6]
+        	                        , 'publish_end_date' => $data[7], 'del_flg' => $data[8], 'reg_date' => $data[9]
+        	                        , 'upd_date' => $data[10], 'photo_saved_as' => $data[11]
+        	                    );
+        	                    DB::update('mst_item')->set($rec2)->where('id',$data[0])->execute();
+        	                }
+
     	                } else {
-    	                    $rec2 = array('item_name' => $data[1], 'item_category_id' => $data[2]
-    	                        , 'item_details' => $data[3], 'item_point_up_rate' => $data[4]
-    	                        , 'item_expire_seconds' => $data[5], 'publish_start_date' => $data[6]
-    	                        , 'publish_end_date' => $data[7], 'del_flg' => $data[8], 'reg_date' => $data[9]
-    	                        , 'upd_date' => $data[10], 'photo_saved_as' => $data[11]
-    	                    );
-    	                    DB::update('mst_item')->set($rec2)->where('id',$data[0])->execute();
+    	                    throw new Exception();
     	                }
 
     	            }
