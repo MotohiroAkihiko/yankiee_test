@@ -275,7 +275,7 @@ class Controller_Admin_Item extends Controller_Admin{
             $data[] = array($row['id'],$row['item_name'],$row['item_category_id'],$row['item_details']
                 ,$row['item_point_up_rate'],$row['item_expire_seconds'],$row['publish_start_date']
                 ,$row['publish_end_date'],$row['del_flg'],$row['reg_date'],$row['upd_date']
-                ,$row['photo_saved_as'],'\r\n');
+                ,$row['photo_saved_as'],);
 	    }
 
 	    // Response
