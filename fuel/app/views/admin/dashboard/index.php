@@ -38,3 +38,4 @@
 	<tbody id="list">
 	</tbody>
 </table>
+<div id="loadarea"></div>
