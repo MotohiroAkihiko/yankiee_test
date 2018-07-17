@@ -298,7 +298,6 @@ class Controller_Admin_Item extends Controller_Admin{
 	{
 	    if (is_uploaded_file($_FILES["csv"]["tmp_name"]))
 	    {
-	        $file_tmp_name = $_FILES["csv"]["tmp_name"];
 	        $file_name = $_FILES["csv"]["name"];
 
 	        //拡張子を判定
@@ -307,68 +306,37 @@ class Controller_Admin_Item extends Controller_Admin{
 	            Session::set_flash('error', 'CSVファイルのみ対応してます。');
 	        }
 	        else
-	        {
-	            // MacのExcelで変換したCSVにも対応するため一旦置換
-	            $buf = file_get_contents($file_tmp_name);
-	            $buf = preg_replace("\r\n|\r|\n","\n", $buf);
-	            $fp = tmpfile();
-	            fwrite($fp, $buf);
-	            rewind($fp);
-
-	            $sql = DB::query('select id from mst_item order by id asc')->execute()->as_array('id');
+	       {
 
 	           try{
-	              DB::start_transaction();
-    	            //配列に変換する
-    	            while (($data = fgetcsv($fp, 0, ",")) !== FALSE)
-    	            {
-    	                mb_convert_variables('UTF-8', 'SJIS-win', $data);
+	               // 初期設定
+	               $config = array(
+	                   'path' => DOCROOT.'assets/admin/csv/',
+	                   'ext_whitelist' => array('csv'),
+	               );
 
-    	                if($data[7] == ""){
-    	                    $data[7] = null;
-    	                }
+	               // アップロード基本プロセス実行
+	               Upload::process($config);
 
-    	                if(!empty($data[1]) && !empty($data[2]) && !empty($data[3]) && !empty($data[4])
-    	                    && !empty($data[5]) && !empty($data[6]) && !empty($data[11])){
+	               // 検証
+	               if (Upload::is_valid())
+	               {
+	                   // 設定を元に保存
+	                   Upload::save();
 
-        	                if(empty($sql[$data[0]]) == true){
+	               }
 
-            	                $rec1 = array('id' => $data[0], 'item_name' => $data[1], 'item_category_id' => $data[2]
-            	                    , 'item_details' => $data[3], 'item_point_up_rate' => $data[4]
-            	                    , 'item_expire_seconds' => $data[5], 'publish_start_date' => $data[6]
-            	                    , 'publish_end_date' => $data[7], 'del_flg' => $data[8], 'reg_date' => $data[9]
-            	                    , 'upd_date' => $data[10], 'photo_saved_as' => $data[11]
-            	                );
-
-            	                DB::insert('mst_item')->set($rec1)->execute();
-        	                } else {
-        	                    $rec2 = array('item_name' => $data[1], 'item_category_id' => $data[2]
-        	                        , 'item_details' => $data[3], 'item_point_up_rate' => $data[4]
-        	                        , 'item_expire_seconds' => $data[5], 'publish_start_date' => $data[6]
-        	                        , 'publish_end_date' => $data[7], 'del_flg' => $data[8], 'reg_date' => $data[9]
-        	                        , 'upd_date' => $data[10], 'photo_saved_as' => $data[11]
-        	                    );
-        	                    DB::update('mst_item')->set($rec2)->where('id',$data[0])->execute();
-        	                }
-
-    	                } else {
-    	                    throw new Exception();
-    	                }
-
-    	            }
-
-    	            DB::commit_transaction();
-	                fclose($fp);
+	               Session::set_flash('error', 'アップロードに成功しました。');
+	               Response::redirect('admin/item');
 
 	            }catch (Exception $e){
-	                DB::rollback_transaction();
-	                Session::set_flash('error', 'CSVファイルに不備があります。');
+	                Session::set_flash('error', 'アップロードに失敗しました。');
 	                Response::redirect('admin/item');
 	            }
 	          }
 	    }
 	    else
-	    {
+	   {
 	        Session::set_flash('error', 'ファイルが選択されていません。');
 	    }
 
