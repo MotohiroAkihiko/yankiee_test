@@ -79,8 +79,8 @@ return array(
 	 * Localization & internationalization settings
 	 */
 	 'language'           => 'ja', // Default language
-	 'language_fallback'  => 'en', // Fallback language when file isn't available for default language
-	 'locale'             => 'ja_JP..UTF-8', // PHP set_locale() setting, null to not set
+	 //'language_fallback'  => 'en', // Fallback language when file isn't available for default language
+    'locale' => 'ja_JP.UTF-8',// PHP set_locale() setting, null to not set
 
 	/**
 	 * Internal string encoding charset
@@ -106,9 +106,9 @@ return array(
 	 * Fuel::L_INFO
 	 * Fuel::L_ALL
 	 */
-	// 'log_threshold'    => Fuel::L_WARNING,
-	// 'log_path'         => APPPATH.'logs/',
-	// 'log_date_format'  => 'Y-m-d H:i:s',
+     //'log_threshold'    => Fuel::L_ALL,
+	 //'log_path'         => APPPATH.'logs/',
+	 //'log_date_format'  => 'Y-m-d H:i:s',
 
 	/**
 	 * Security settings

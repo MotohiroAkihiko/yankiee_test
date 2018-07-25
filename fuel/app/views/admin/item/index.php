@@ -81,6 +81,8 @@
 <div class="csv_DL">
 <?php echo Form::open(array('action' => $download_url, 'id' => 'download') ); ?>
 	<?php echo Html::anchor('javascript:void(0);', 'CSVダウンロード', array('class' => 'csv_download')) ?>
+	<?php echo Form::hidden('keyword', Input::get('keyword'), array('id' => 'keyword'))?>
+	<?php echo Form::hidden('keyword_id', Input::get('keyword_id'), array())?>
 <?php echo Form::close(); ?>
 </div>
 

@@ -269,7 +269,23 @@ class Controller_Admin_Item extends Controller_Admin{
 
 	public static function action_csv_download(){
 
-	    $sql = DB::query('select * from mst_item order by id asc')->execute();
+	    $keyword = Input::post('keyword');
+	    $keyword_id = mb_convert_kana(Input::post('keyword_id'), 'kvrn');
+
+	    if(!empty($keyword_id) && !empty($keyword)){
+	        $sql = DB::query("select * from mst_item where id = '".$keyword_id."' and item_name LIKE '%".$keyword."%' or item_details LIKE '%".$keyword."%' order by id asc")->execute();
+	    } else if(!empty($keyword_id)){
+	        $sql = DB::query('select * from mst_item where id = '.$keyword_id.' order by id asc')->execute();
+	    } else if(!empty($keyword)){
+	        $sql = DB::query("select * from mst_item where item_name LIKE '%".$keyword."%' or item_details LIKE '%".$keyword."%' order by id asc")->execute();
+	    } else {
+	        $sql = DB::query('select * from mst_item order by id asc')->execute();
+	    }
+
+	    $data[] = array('ID','アイテム名','カテゴリーID','アイテム説明'
+	        ,'ポイントアップ率','アイテム有効期限','公開期間（開始）'
+	        ,'公開期間（終了)','削除フラグ','登録日時','更新日時'
+	        ,'アイコン名',);
 
 	    foreach ( $sql as $row ) {
             $data[] = array($row['id'],$row['item_name'],$row['item_category_id'],$row['item_details']
@@ -299,14 +315,21 @@ class Controller_Admin_Item extends Controller_Admin{
 	    if (is_uploaded_file($_FILES["csv"]["tmp_name"]))
 	    {
 	        $file_name = $_FILES["csv"]["name"];
+	        $file_tmp_name = $_FILES["csv"]["tmp_name"];
 
 	        //拡張子を判定
 	        if (pathinfo($file_name, PATHINFO_EXTENSION) != 'csv')
 	        {
-	            Session::set_flash('error', 'CSVファイルのみ対応してます。');
+	            Session::set_flash('error', 'CSV形式のみ対応してます。');
 	        }
 	        else
 	       {
+
+	           $buf = file_get_contents($file_tmp_name);
+	           $buf = preg_replace("/\r\n|\r|\n/", "\n", $buf);
+	           $fp = tmpfile();
+	           fwrite($fp, $buf);
+	           rewind($fp);
 
 	           try{
 	               // 初期設定
@@ -321,12 +344,49 @@ class Controller_Admin_Item extends Controller_Admin{
 	               // 検証
 	               if (Upload::is_valid())
 	               {
+	                   while (($data = fgetcsv($fp, 0, ',')) !== FALSE)
+	                   {
+	                       if($data[0] != "ID"){
+
+	                           mb_convert_variables('UTF-8', 'SJIS-win', $data);
+
+	                           if(empty($data[1])){
+	                               Session::set_flash('error', 'アイテム名に値が入力されてない箇所があります。');
+	                               Response::redirect('admin/item');
+	                           }
+	                           if(empty($data[2])){
+	                               Session::set_flash('error', 'カテゴリーIDに値が入力されてない箇所があります。');
+	                               Response::redirect('admin/item');
+	                           }
+	                           if(empty($data[3])){
+	                               Session::set_flash('error', 'アイテム説明に値が入力されてない箇所があります。');
+	                               Response::redirect('admin/item');
+	                           }
+	                           if(empty($data[4])){
+	                               Session::set_flash('error', 'ポイントアップ率に値が入力されてない箇所があります。');
+	                               Response::redirect('admin/item');
+	                           }
+	                           if(empty($data[5])){
+	                               Session::set_flash('error', 'アイテム有効期限に値が入力されてない箇所があります。');
+	                               Response::redirect('admin/item');
+	                           }
+	                           if(empty($data[6])){
+	                               Session::set_flash('error', '公開期間（開始）に値が入力されてない箇所があります。');
+	                               Response::redirect('admin/item');
+	                           }
+	                           if(empty($data[11])){
+	                               Session::set_flash('error', 'アイコン名に値が入力されてない箇所があります。');
+	                               Response::redirect('admin/item');
+	                           }
+
+	                       }
+	                   }
 	                   // 設定を元に保存
 	                   Upload::save();
-
+	                   fclose($fp);
 	               }
 
-	               Session::set_flash('error', 'アップロードに成功しました。');
+	               Session::set_flash('success', 'アップロードに成功しました。');
 	               Response::redirect('admin/item');
 
 	            }catch (Exception $e){

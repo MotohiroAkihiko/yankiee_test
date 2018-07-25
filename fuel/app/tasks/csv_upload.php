@@ -15,7 +15,7 @@ class csv_upload
         \Common_Util::write_info_log('[Start]CSVアップロード開始', 'task');
 
         $buf = file_get_contents('C:\xampp\htdocs\fuelphp\public\yankiee_test\trunk\html\tools\assets\admin\csv'.$item_data.'');
-        $buf = preg_replace("\r\n|\r|\n","\n", $buf);
+        $buf = preg_replace("/\r\n|\r|\n/", "\n", $buf);
         $fp = tmpfile();
         fwrite($fp, $buf);
         rewind($fp);
@@ -25,41 +25,46 @@ class csv_upload
         try{
             DB::start_transaction();
             //配列に変換する
-            while (($data = fgetcsv($fp, 0, ",")) !== FALSE)
+            while (($data = fgetcsv($fp, 0, ',')) !== FALSE)
             {
-                mb_convert_variables('UTF-8', 'SJIS-win', $data);
+                if($data[0] != "ID"){
 
-                if($data[7] == ""){
-                    $data[7] = null;
-                }
+                    mb_convert_variables('UTF-8', 'SJIS-win', $data);
 
-                if(!empty($data[1]) && !empty($data[2]) && !empty($data[3]) && !empty($data[4])
-                    && !empty($data[5]) && !empty($data[6]) && !empty($data[11])){
+                    if(empty($data[7])){
+                        $data[7] = null;
+                    }
 
-                        if(empty($sql[$data[0]]) == true){
+                    if(!empty($data[1]) && !empty($data[2]) && !empty($data[3]) && !empty($data[4])
+                        && !empty($data[5]) && !empty($data[6]) && !empty($data[11])){
 
-                            $rec1 = array('item_name' => $data[1], 'item_category_id' => $data[2]
-                                , 'item_details' => $data[3], 'item_point_up_rate' => $data[4]
-                                , 'item_expire_seconds' => $data[5], 'publish_start_date' => $data[6]
-                                , 'publish_end_date' => $data[7], 'del_flg' => $data[8], 'reg_date' => $data[9]
-                                , 'upd_date' => $data[10], 'photo_saved_as' => $data[11]
-                            );
+                            if(empty($sql[$data[0]]) == true){
 
-                            DB::insert('mst_item')->set($rec1)->execute();
-                        } else {
-                            $rec2 = array('item_name' => $data[1], 'item_category_id' => $data[2]
-                                , 'item_details' => $data[3], 'item_point_up_rate' => $data[4]
-                                , 'item_expire_seconds' => $data[5], 'publish_start_date' => $data[6]
-                                , 'publish_end_date' => $data[7], 'del_flg' => $data[8], 'reg_date' => $data[9]
-                                , 'upd_date' => $data[10], 'photo_saved_as' => $data[11]
-                            );
-                            DB::update('mst_item')->set($rec2)->where('id',$data[0])->execute();
-                        }
+                                $rec1 = array('item_name' => $data[1], 'item_category_id' => $data[2]
+                                    , 'item_details' => $data[3], 'item_point_up_rate' => $data[4]
+                                    , 'item_expire_seconds' => $data[5], 'publish_start_date' => $data[6]
+                                    , 'publish_end_date' => $data[7], 'del_flg' => $data[8], 'reg_date' => $data[9]
+                                    , 'upd_date' => $data[10], 'photo_saved_as' => $data[11]
+                                );
 
-                } else {
-                    DB::rollback_transaction();
-                    \Common_Util::write_info_log('CSVファイルに値が記入されてない箇所があります。', 'task');
-                    return 'errer';
+                                DB::insert('mst_item')->set($rec1)->execute();
+                            } else {
+
+                                $rec2 = array('item_name' => $data[1], 'item_category_id' => $data[2]
+                                    , 'item_details' => $data[3], 'item_point_up_rate' => $data[4]
+                                    , 'item_expire_seconds' => $data[5], 'publish_start_date' => $data[6]
+                                    , 'publish_end_date' => $data[7], 'del_flg' => $data[8], 'reg_date' => $data[9]
+                                    , 'upd_date' => $data[10], 'photo_saved_as' => $data[11]
+                                );
+
+                                DB::update('mst_item')->set($rec2)->where('id',$data[0])->execute();
+                            }
+
+                    } else {
+                        DB::rollback_transaction();
+                        \Log::warning("必要な項目に値が入っていないところがあります。");
+                        return 'errer';
+                    }
                 }
 
             }
@@ -69,7 +74,7 @@ class csv_upload
 
         }catch (Exception $e){
             DB::rollback_transaction();
-            \Common_Util::write_info_log('CSVファイルの構成に誤りがあります。', 'task');
+            \Log::warning("CSVファイルの構成に誤りがあります。");
             return 'errer';
         }
 
