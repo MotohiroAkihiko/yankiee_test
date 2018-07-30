@@ -71,13 +71,21 @@ class Validation extends \Fuel\Core\Validation
     }
 
     public static function _validation_item_number($val){
-        if(!preg_match("/[0-9０-９]/", $val)){
+        $sum = mb_convert_kana($val, 'kvrn');
+        if(!preg_match("/[0-9]/", $sum)){
             return false;
         }
     }
 
-    public static function _validation_category_num($val){
-        if($val > 3){
+    public static function _validation_category_num(){
+        $item_category = mb_convert_kana(Input::post('item_category_id'), 'kvrn');
+        if($item_category > 3){
+            return false;
+        }
+    }
+
+    public static function _validation_item_data(){
+        if ($_FILES['upload']['size'] === 0) {
             return false;
         }
     }

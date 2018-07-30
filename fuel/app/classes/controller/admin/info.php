@@ -91,7 +91,29 @@ class Controller_Admin_Info extends Controller_Admin{
 
 		if (Input::method() == 'POST') {
 
-			$val = Model_Info::validate('add');
+		    $val = Validation::forge();
+
+		    $val->add('info_title', 'お知らせタイトル')
+		    ->add_rule('required')
+		    ->add_rule('max_length[200]')
+		    ->add_rule('form_error');
+
+		    $val->add('info_details', 'お知らせ内容')
+		    ->add_rule('required')
+		    ->add_rule('max_length[1000]');
+
+		    $val->add('publish_start_date', '公開期間（開始）')
+		    ->add_rule('required')
+		    ->add_rule('valid_date[Y-m-d H:i]');
+
+		    $val->add('publish_end_date', '公開期間（終了）')
+		    ->add_rule('valid_date[Y-m-d H:i]')
+		    ->add_rule('date_time');
+
+		    $val->add('info_category', 'お知らせカテゴリ')
+		    ->add_rule('required')
+		    ->add_rule('max_length[10]')
+		    ->add_rule('form_error');
 
 			if ($val->run()) {
 
@@ -139,7 +161,29 @@ class Controller_Admin_Info extends Controller_Admin{
 
 		if (Input::method() == 'POST') {
 
-			$val = Model_Info::validate('add');
+		    $val = Validation::forge();
+
+		    $val->add('info_title', 'お知らせタイトル')
+		    ->add_rule('required')
+		    ->add_rule('max_length[200]')
+		    ->add_rule('form_error');
+
+		    $val->add('info_details', 'お知らせ内容')
+		    ->add_rule('required')
+		    ->add_rule('max_length[1000]');
+
+		    $val->add('publish_start_date', '公開期間（開始）')
+		    ->add_rule('required')
+		    ->add_rule('valid_date[Y-m-d H:i]');
+
+		    $val->add('publish_end_date', '公開期間（終了）')
+		    ->add_rule('valid_date[Y-m-d H:i]')
+		    ->add_rule('date_time');
+
+		    $val->add('info_category', 'お知らせカテゴリ')
+		    ->add_rule('required')
+		    ->add_rule('max_length[10]')
+		    ->add_rule('form_error');
 
 			if ($val->run()) {
 			    DB::query('begin')->execute();

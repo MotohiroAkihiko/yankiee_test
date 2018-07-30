@@ -38,7 +38,7 @@ class Controller_Admin_Item extends Controller_Admin{
 		        ->where_close();
 		    }
 		} else if(!preg_match('/[0-9]/',$keyword_id) && $keyword_id != ""){
-		    Session::set_flash('success', 'ID検索に数字以外が入力されてます。');
+		    Session::set_flash('errer', 'ID検索に数字以外が入力されてます。');
 		}
 		// 公開中のみ表示
 		if ( !empty($pub) ) {
@@ -94,16 +94,53 @@ class Controller_Admin_Item extends Controller_Admin{
 
 		if (Input::method() == 'POST') {
 
-			$val = Model_Item::validate('add');
+		    $val = Validation::forge();
 
-			$config = array(
-			    'path' => DOCROOT.'assets/admin/img/photo/',
-			    'ext_whitelist' => array('img', 'jpg', 'jpeg', 'gif', 'png'),
-			);
-			Upload::process($config);
+		    $val->add('item_name', 'アイテム名')
+		    ->add_rule('required')
+		    ->add_rule('max_length[200]');
+
+		    $val->add('item_details', 'アイテム説明')
+		    ->add_rule('required')
+		    ->add_rule('max_length[1000]');
+
+		    $val->add('publish_start_date', '公開期間（開始）')
+		    ->add_rule('required')
+		    ->add_rule('valid_date[Y-m-d H:i]');
+
+		    $val->add('publish_end_date', '公開期間（終了）')
+		    ->add_rule('valid_date[Y-m-d H:i]')
+		    ->add_rule('date_time');
+
+		    $val->add('item_category_id', 'カテゴリー')
+		    ->add_rule('required')
+		    ->add_rule('max_length[10]')
+		    ->add_rule('item_number')
+		    ->add_rule('category_num');
+
+		    $val->add('item_expire_seconds', 'アイテム有効期限(秒)')
+		    ->add_rule('required')
+		    ->add_rule('max_length[10]')
+		    ->add_rule('item_number')
+		    ->add_rule('category_num');
+
+		    $val->add('item_point_up_rate', 'ポイントアップ率')
+		    ->add_rule('required')
+		    ->add_rule('max_length[10]')
+		    ->add_rule('item_number');
+
+		    $val->add('upload','アイコン')
+		    ->add_rule('item_data');
 
                if ($val->run())
                {
+
+                   $config = array(
+                       'path' => DOCROOT.'assets/admin/img/photo/',
+                       'ext_whitelist' => array('img', 'jpg', 'jpeg', 'gif', 'png'),
+                   );
+
+                   Upload::process($config);
 
                    if (Upload::is_valid())
                    {
@@ -112,19 +149,34 @@ class Controller_Admin_Item extends Controller_Admin{
 
                        foreach (Upload::get_files() as $file)
                        {
-            				$model = Model_Item::forge(array(
-            				    'item_name' => htmlspecialchars(Input::post('item_name'), ENT_QUOTES, 'UTF-8'),
-            					'item_details' => Input::post('item_details'),
-            					'publish_start_date' => Common_Util::format_datetime_input2db(Input::post('publish_start_date')),
-            					'publish_end_date' => Input::post('publish_end_date') ? Common_Util::format_datetime_input2db(Input::post('publish_end_date'), '59') : NULL,
-            					'del_flg' => 0,
-            					'reg_date' => date('Y-m-d H:i:s'),
-            					'upd_date' => date('Y-m-d H:i:s'),
-            				    'item_category_id' => mb_convert_kana(Input::post('item_category_id'), 'kvrn'),
-            				    'item_expire_seconds' => mb_convert_kana(Input::post('item_expire_seconds'), 'kvrn'),
-            				    'item_point_up_rate' => mb_convert_kana(Input::post('item_point_up_rate'), 'kvrn'),
-            				    'photo_saved_as' => $file['saved_as'],
-            				));
+
+            				 try{
+
+            				    DB::start_transaction();
+
+            				    $model = Model_Item::forge(array(
+            				        'item_name' => htmlspecialchars(Input::post('item_name'), ENT_QUOTES, 'UTF-8'),
+            				        'item_details' => Input::post('item_details'),
+            				        'publish_start_date' => Common_Util::format_datetime_input2db(Input::post('publish_start_date')),
+            				        'publish_end_date' => Input::post('publish_end_date') ? Common_Util::format_datetime_input2db(Input::post('publish_end_date'), '59') : NULL,
+            				        'del_flg' => 0,
+            				        'reg_date' => date('Y-m-d H:i:s'),
+            				        'upd_date' => date('Y-m-d H:i:s'),
+            				        'item_category_id' => mb_convert_kana(Input::post('item_category_id'), 'kvrn'),
+            				        'item_expire_seconds' => mb_convert_kana(Input::post('item_expire_seconds'), 'kvrn'),
+            				        'item_point_up_rate' => mb_convert_kana(Input::post('item_point_up_rate'), 'kvrn'),
+            				        'photo_saved_as' => $file['saved_as'],
+            				    ));
+
+            				    DB::commit_transaction();
+
+            				}
+            				catch (Exception $e)
+            				{
+            				    DB::rollback_transaction();
+            				    Session::set_flash('error', '現在編集中です');
+            				    Response::redirect('admin/item');
+            				}
 
             				if ( $model->save() ) {
             					Session::set_flash('success', '「'.$model->item_name.'」を追加しました。');
@@ -158,7 +210,43 @@ class Controller_Admin_Item extends Controller_Admin{
 
 		if (Input::method() == 'POST') {
 
-			$val = Model_Item::validate('add');
+		    $val = Validation::forge();
+
+		    $val->add('item_name', 'アイテム名')
+		    ->add_rule('required')
+		    ->add_rule('max_length[200]');
+
+		    $val->add('item_details', 'アイテム説明')
+		    ->add_rule('required')
+		    ->add_rule('max_length[1000]');
+
+		    $val->add('publish_start_date', '公開期間（開始）')
+		    ->add_rule('required')
+		    ->add_rule('valid_date[Y-m-d H:i]');
+
+		    $val->add('publish_end_date', '公開期間（終了）')
+		    ->add_rule('valid_date[Y-m-d H:i]')
+		    ->add_rule('date_time');
+
+		    $val->add('item_category_id', 'カテゴリー')
+		    ->add_rule('required')
+		    ->add_rule('max_length[10]')
+		    ->add_rule('item_number')
+		    ->add_rule('category_num');
+
+		    $val->add('item_expire_seconds', 'アイテム有効期限(秒)')
+		    ->add_rule('required')
+		    ->add_rule('max_length[10]')
+		    ->add_rule('item_number');
+
+
+		    $val->add('item_point_up_rate', 'ポイントアップ率')
+		    ->add_rule('required')
+		    ->add_rule('max_length[10]')
+		    ->add_rule('item_number');
+
+		    $val->add('upload','アイコン')
+		    ->add_rule('item_data');
 
     			if ($val->run()) {
 
@@ -194,20 +282,15 @@ class Controller_Admin_Item extends Controller_Admin{
     			            }
     			            catch (Exception $e)
     			            {
-    			                if(DB::in_transaction()){
 			                    DB::rollback_transaction();
 			                    Session::set_flash('error', '現在編集中です');
 			                    Response::redirect('admin/item');
-
-    			                throw $e;
-    			                }
     			            }
 
             				if ( $model->save() ) {
             					Session::set_flash('success', '「'.$model->item_name.'」を更新しました。');
-
             				} else {
-            					Session::set_flash('error', '登録処理に失敗しました。');
+            				    Session::set_flash('error', e('登録処理が失敗しました。'));
             				}
             				Response::redirect('admin/item');
             			}
@@ -224,6 +307,7 @@ class Controller_Admin_Item extends Controller_Admin{
 		$this->template->set_global('errors', $errors, false);
 
 		$this->template->title = "商品編集";
+		$data['item'] = $model->photo_saved_as;
 		$data['mode'] = 'edit';
 		$data['delete_url'] = Uri::base().'admin/item/delete/'.$id;
 		Asset::js(array('admin/js/form_common.js', 'admin/js/item_form.js', 'admin/bower_components/datetimepicker/jquery.datetimepicker.js'), array(), 'add_js');
@@ -237,13 +321,12 @@ class Controller_Admin_Item extends Controller_Admin{
 	    if (!is_numeric($id) || $model = Model_Item::find($id)) {
 
         try{
-            //DB::query('SET statement_timeout TO 5000')->execute();
             DB::start_transaction();
+
             DB::query('select * from mst_item where id ='.$model->id.' for update')->execute();
 
  			$model->del_flg = 1;
  			$model->upd_date = date('Y-m-d H:i:s');
-
 
  			DB::commit_transaction();
 
@@ -261,6 +344,7 @@ class Controller_Admin_Item extends Controller_Admin{
  			} else {
 				Session::set_flash('error', '削除処理に失敗しました。');
  			}
+
  		} else {
  			Session::set_flash('error', '指定されたデータは存在しません。');
 		}
@@ -317,6 +401,11 @@ class Controller_Admin_Item extends Controller_Admin{
 	        $file_name = $_FILES["csv"]["name"];
 	        $file_tmp_name = $_FILES["csv"]["tmp_name"];
 
+	        $ini = parse_ini_file(DOCROOT.'assets/admin/config/config.ini');
+	        $limit = intval($ini["file_upper_limit"]);
+
+	        $i = 0;
+
 	        //拡張子を判定
 	        if (pathinfo($file_name, PATHINFO_EXTENSION) != 'csv')
 	        {
@@ -331,24 +420,20 @@ class Controller_Admin_Item extends Controller_Admin{
 	           fwrite($fp, $buf);
 	           rewind($fp);
 
+	           $sql = DB::query('select id from mst_item order by id asc')->execute()->as_array('id');
+
 	           try{
-	               // 初期設定
-	               $config = array(
-	                   'path' => DOCROOT.'assets/admin/csv/',
-	                   'ext_whitelist' => array('csv'),
-	               );
+	               DB::start_transaction();
 
-	               // アップロード基本プロセス実行
-	               Upload::process($config);
-
-	               // 検証
-	               if (Upload::is_valid())
-	               {
-	                   while (($data = fgetcsv($fp, 0, ',')) !== FALSE)
-	                   {
-	                       if($data[0] != "ID"){
-
+                   while (($data = fgetcsv($fp, 0, ',')) !== FALSE)
+                   {
+                       if($data[0] != "ID"){
+                           if($limit > $i){
 	                           mb_convert_variables('UTF-8', 'SJIS-win', $data);
+
+	                           if(empty($data[7])){
+	                               $data[7] = null;
+	                           }
 
 	                           if(empty($data[1])){
 	                               Session::set_flash('error', 'アイテム名に値が入力されてない箇所があります。');
@@ -378,22 +463,45 @@ class Controller_Admin_Item extends Controller_Admin{
 	                               Session::set_flash('error', 'アイコン名に値が入力されてない箇所があります。');
 	                               Response::redirect('admin/item');
 	                           }
+                               $i = $i + 1;
+	                           if(empty($sql[$data[0]]) == true){
 
-	                       }
-	                   }
-	                   // 設定を元に保存
-	                   Upload::save();
-	                   fclose($fp);
-	               }
+	                               $rec1 = array('item_name' => $data[1], 'item_category_id' => $data[2]
+	                                   , 'item_details' => $data[3], 'item_point_up_rate' => $data[4]
+	                                   , 'item_expire_seconds' => $data[5], 'publish_start_date' => $data[6]
+	                                   , 'publish_end_date' => $data[7], 'del_flg' => $data[8], 'reg_date' => $data[9]
+	                                   , 'upd_date' => $data[10], 'photo_saved_as' => $data[11]
+	                               );
 
-	               Session::set_flash('success', 'アップロードに成功しました。');
-	               Response::redirect('admin/item');
+	                               DB::insert('mst_item')->set($rec1)->execute();
+	                           } else {
 
-	            }catch (Exception $e){
-	                Session::set_flash('error', 'アップロードに失敗しました。');
-	                Response::redirect('admin/item');
-	            }
-	          }
+	                               $rec2 = array('item_name' => $data[1], 'item_category_id' => $data[2]
+	                                   , 'item_details' => $data[3], 'item_point_up_rate' => $data[4]
+	                                   , 'item_expire_seconds' => $data[5], 'publish_start_date' => $data[6]
+	                                   , 'publish_end_date' => $data[7], 'del_flg' => $data[8], 'reg_date' => $data[9]
+	                                   , 'upd_date' => $data[10], 'photo_saved_as' => $data[11]
+	                               );
+
+	                               DB::update('mst_item')->set($rec2)->where('id',$data[0])->execute();
+	                           }
+                           } else {
+                               Session::set_flash('error', 'データ数が'.$limit.'を超えています。');
+                               Response::redirect('admin/item');
+                           }
+                       }
+                   }
+                   fclose($fp);
+                   DB::commit_transaction();
+                   Session::set_flash('success', 'アップロードに成功しました。');
+                   Response::redirect('admin/item');
+
+               }catch (Exception $e){
+                   DB::rollback_transaction();
+                   Session::set_flash('error', 'アップロードに失敗しました。');
+                   Response::redirect('admin/item');
+               }
+	       }
 	    }
 	    else
 	   {
@@ -401,8 +509,6 @@ class Controller_Admin_Item extends Controller_Admin{
 	    }
 
 	    Response::redirect('admin/item');
-
-
 	}
 
 }
