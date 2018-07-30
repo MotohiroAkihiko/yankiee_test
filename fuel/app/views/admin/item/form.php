@@ -52,7 +52,11 @@
 						<div data-field-span="1">
 							<label>アイコン<span class="required">(※)</span></label>
 							<?php echo Form::file('upload');?>
+							<?php if ( $mode == 'edit' ) : ?>
+							<div class="preview"><img src="/assets/admin/img/photo/<?php echo $item?>" width="85" height="85"></div>
+							<?php else :?>
 							<div class="preview"></div>
+							<?php endif; ?>
 						</div>
 					</div>
 				</fieldset>
@@ -75,7 +79,7 @@
 				</fieldset>
 		</div>
 	</div>
-
+	<?php echo Input::get('upload');?>
 	<br>
 	<div class="flakes-actions-bar">
 		<?php echo Form::submit(array('value'=>'保存', 'name'=>'submit', 'class' => 'action button-green bigger left')); ?>

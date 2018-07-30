@@ -14,26 +14,26 @@ class Controller_Admin extends Controller_Template
 
 		\Config::load('account', true);
 		$this->account_config = \Config::get('account');
-		
+
 		Asset::add_path('assets/', 'css');
 		Asset::add_path('assets/', 'js');
 		Asset::add_path('assets/', 'img');
-		
+
 		if (Request::active()->controller !== 'Controller_Admin' or ! in_array(Request::active()->action, array('login', 'logout')))
 		{
 			if (!$this->auth_check()) {
 				Response::redirect('admin/login');
 			}
-			
+
 			if (!$this->auth_group_check()) {
 				Response::redirect('admin/404');
 			}
-		
+
 			$this->current_user = $this->get_auth_user();
 		}
-		
+
 		View::set_global('current_user', $this->current_user);
-		
+
 	}
 
 	public function action_login()
@@ -45,11 +45,11 @@ class Controller_Admin extends Controller_Template
 
 		$errors = array();
 		if (Input::method() == 'POST') {
-			
+
 			// バリデーションルールの設定(ログインID、PW必須)
 			$val->add('login_user_id', 'ログインID')
 			    ->add_rule('required');
-			
+
 			$val->add('password', 'パスワード')
 			    ->add_rule('required');
 
@@ -65,10 +65,10 @@ class Controller_Admin extends Controller_Template
 					$this->template->set_global('login_error', 'ログインIDまたはパスワードが間違っています。');
 				}
 			}
-			
+
 			$errors = $val->error();
 		}
-		
+
 
 		$this->template->title = 'ログイン';
 		$this->template->set_global('errors', $errors, false);
@@ -108,12 +108,12 @@ class Controller_Admin extends Controller_Template
 	private function auth_login($login_user_id, $password)
 	{
 		if ( isset($this->account_config['users'][$login_user_id]) && $this->account_config['users'][$login_user_id]['password'] == md5($this->account_config['salt'].$password) ) {
-			
+
 			$loginUser = array();
 			$loginUser['id'] = $login_user_id;
 			$loginUser['name'] = $this->account_config['users'][$login_user_id]['name'];
 			$loginUser['group'] = $this->account_config['users'][$login_user_id]['group'];
-			
+
 			Session::set($this->account_config['session_name'], $loginUser);
 			return true;
 		}
@@ -140,23 +140,23 @@ class Controller_Admin extends Controller_Template
 	private function auth_group_check()
 	{
 		$result = true;
-		
+
 		if ( !$this->auth_check() ) return false;
-		
+
 		$account_config = $this->get_auth_user();
-		
+
 		if (!empty($this->auth_group)) {
-			
+
 			if (is_array($this->auth_group)) {
 				array_search($account_config['group'], $this->auth_group) === false and $result = false;
 			} else {
 				$this->auth_group != $account_config['group'] and $result = false;
 			}
 		}
-		
+
 		return $result;
 	}
-	
+
 	/**
 	 * get_auth_user
 	 *
