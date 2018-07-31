@@ -1,4 +1,5 @@
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
 <h1>ダッシュボード</h1>
 
 <h2>学校情報</h2>
