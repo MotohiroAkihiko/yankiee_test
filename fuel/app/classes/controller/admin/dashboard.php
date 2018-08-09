@@ -13,7 +13,7 @@ class Controller_Admin_Dashboard extends Controller_Admin{
 		!isset($data['school_user_count'][3]['count']) and $data['school_user_count'][3]['count'] = 0;
 
 		$this->template->title = 'ダッシュボード';
-		Asset::js(array('admin/js/json.js','admin/js/jquery.autopager-1.0.0.js','admin/js/lazyload.js'), array(), 'add_js');
+		Asset::js(array('admin/js/json.js','admin/js/lazyload.js'), array(), 'add_js');
 		$this->template->content = View::forge('admin/dashboard/index', $data);
 	}
 }

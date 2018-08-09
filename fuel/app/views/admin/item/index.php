@@ -107,3 +107,12 @@
         <?php echo Form::close(); ?>
     </div>
 </div>
+
+<div id="loader-bg">
+    <div id="loading">
+        <img src="/assets/admin/img/gif-load.gif">
+        <div id="contents">
+   		 	<p>処理中</p>
+ 		</div>
+    </div>
+ </div>

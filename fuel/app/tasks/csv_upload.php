@@ -14,7 +14,7 @@ class csv_upload
         echo '[Start]'.date('Y-m-d H:i:s') . PHP_EOL;
         \Common_Util::write_info_log('[Start]CSVアップロード開始', 'task');
 
-        $buf = file_get_contents('C:\xampp\htdocs\fuelphp\public\yankiee_test\trunk\html\tools\assets\admin\csv'.$item_data.'');
+        $buf = file_get_contents('C:\xampp\htdocs\fuelphp\public\yankiee_test\trunk\html\tools\assets\admin\csv{$item_data}');
         $buf = preg_replace("/\r\n|\r|\n/", "\n", $buf);
         $fp = tmpfile();
         fwrite($fp, $buf);

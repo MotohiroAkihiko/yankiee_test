@@ -3,7 +3,6 @@ class Controller_Admin_Json extends Controller_Admin{
 
 	public function action_json_viwe()
 	{
-
 	    try
 	    {
 	        // 'users' テーブルのデータを取得する

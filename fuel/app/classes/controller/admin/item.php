@@ -3,6 +3,7 @@ class Controller_Admin_Item extends Controller_Admin{
 
     public function action_index()
 	{
+	    Asset::js(array('admin/js/loading.js'), array(), 'add_js');
 		$data = array();
 
 		// 入力値取得
@@ -83,7 +84,7 @@ class Controller_Admin_Item extends Controller_Admin{
 		$data['download_url'] = Uri::base().'admin/item/csv_download/';
 		$data['upload_url'] = Uri::base().'admin/item/csv_upload/';
 		Asset::js(array('admin/js/form_common.js', 'admin/js/item_form.js', 'admin/bower_components/datetimepicker/jquery.datetimepicker.js'), array(), 'add_js');
-		Asset::css(array('admin/bower_components/datetimepicker/jquery.datetimepicker.css'), array(), 'add_css');
+		Asset::css(array('admin/bower_components/datetimepicker/jquery.datetimepicker.css','admin/css/loading.css'), array(), 'add_css');
 		$this->template->content = View::forge('admin/item/index', $data);
 	}
 
@@ -401,114 +402,106 @@ class Controller_Admin_Item extends Controller_Admin{
 	        $file_name = $_FILES["csv"]["name"];
 	        $file_tmp_name = $_FILES["csv"]["tmp_name"];
 
-	        $ini = parse_ini_file(DOCROOT.'assets/admin/config/config.ini');
-	        $limit = intval($ini["file_upper_limit"]);
-
-	        $i = 0;
-
 	        //拡張子を判定
 	        if (pathinfo($file_name, PATHINFO_EXTENSION) != 'csv')
 	        {
 	            Session::set_flash('error', 'CSV形式のみ対応してます。');
 	        }
 	        else
-	       {
+	        {
+	            $buf = file_get_contents($file_tmp_name);
+	            $buf = preg_replace("/\r\n|\r|\n/", "\n", $buf);
+	            $fp = tmpfile();
+	            fwrite($fp, $buf);
+	            rewind($fp);
 
-	           $buf = file_get_contents($file_tmp_name);
-	           $buf = preg_replace("/\r\n|\r|\n/", "\n", $buf);
-	           $fp = tmpfile();
-	           fwrite($fp, $buf);
-	           rewind($fp);
+	            $sql = DB::query('select id from mst_item order by id asc')->execute()->as_array('id');
 
-	           $sql = DB::query('select id from mst_item order by id asc')->execute()->as_array('id');
+	            try{
+	                DB::start_transaction();
 
-	           try{
-	               DB::start_transaction();
+	                while (($data = fgetcsv($fp, 0, ',')) !== FALSE)
+	                {
+	                    if($data[0] != "ID"){
+	                            mb_convert_variables('UTF-8', 'SJIS-win', $data);
 
-                   while (($data = fgetcsv($fp, 0, ',')) !== FALSE)
-                   {
-                       if($data[0] != "ID"){
-                           if($limit > $i){
-	                           mb_convert_variables('UTF-8', 'SJIS-win', $data);
+	                            if(empty($data[7])){
+	                                $data[7] = null;
+	                            }
 
-	                           if(empty($data[7])){
-	                               $data[7] = null;
-	                           }
+	                            if(empty($data[1])){
+	                                Session::set_flash('error', 'アイテム名に値が入力されてない箇所があります。');
+	                                Response::redirect('admin/item');
+	                            }
+	                            if(empty($data[2])){
+	                                Session::set_flash('error', 'カテゴリーIDに値が入力されてない箇所があります。');
+	                                Response::redirect('admin/item');
+	                            }
+	                            if(empty($data[3])){
+	                                Session::set_flash('error', 'アイテム説明に値が入力されてない箇所があります。');
+	                                Response::redirect('admin/item');
+	                            }
+	                            if(empty($data[4])){
+	                                Session::set_flash('error', 'ポイントアップ率に値が入力されてない箇所があります。');
+	                                Response::redirect('admin/item');
+	                            }
+	                            if(empty($data[5])){
+	                                Session::set_flash('error', 'アイテム有効期限に値が入力されてない箇所があります。');
+	                                Response::redirect('admin/item');
+	                            }
+	                            if(empty($data[6])){
+	                                Session::set_flash('error', '公開期間（開始）に値が入力されてない箇所があります。');
+	                                Response::redirect('admin/item');
+	                            }
+	                            if(empty($data[11])){
+	                                Session::set_flash('error', 'アイコン名に値が入力されてない箇所があります。');
+	                                Response::redirect('admin/item');
+	                            }
+	                            $i = $i + 1;
+	                            if(empty($sql[$data[0]]) == true){
 
-	                           if(empty($data[1])){
-	                               Session::set_flash('error', 'アイテム名に値が入力されてない箇所があります。');
-	                               Response::redirect('admin/item');
-	                           }
-	                           if(empty($data[2])){
-	                               Session::set_flash('error', 'カテゴリーIDに値が入力されてない箇所があります。');
-	                               Response::redirect('admin/item');
-	                           }
-	                           if(empty($data[3])){
-	                               Session::set_flash('error', 'アイテム説明に値が入力されてない箇所があります。');
-	                               Response::redirect('admin/item');
-	                           }
-	                           if(empty($data[4])){
-	                               Session::set_flash('error', 'ポイントアップ率に値が入力されてない箇所があります。');
-	                               Response::redirect('admin/item');
-	                           }
-	                           if(empty($data[5])){
-	                               Session::set_flash('error', 'アイテム有効期限に値が入力されてない箇所があります。');
-	                               Response::redirect('admin/item');
-	                           }
-	                           if(empty($data[6])){
-	                               Session::set_flash('error', '公開期間（開始）に値が入力されてない箇所があります。');
-	                               Response::redirect('admin/item');
-	                           }
-	                           if(empty($data[11])){
-	                               Session::set_flash('error', 'アイコン名に値が入力されてない箇所があります。');
-	                               Response::redirect('admin/item');
-	                           }
-                               $i = $i + 1;
-	                           if(empty($sql[$data[0]]) == true){
+	                                $rec1 = array('item_name' => $data[1], 'item_category_id' => $data[2]
+	                                    , 'item_details' => $data[3], 'item_point_up_rate' => $data[4]
+	                                    , 'item_expire_seconds' => $data[5], 'publish_start_date' => $data[6]
+	                                    , 'publish_end_date' => $data[7], 'del_flg' => $data[8], 'reg_date' => $data[9]
+	                                    , 'upd_date' => $data[10], 'photo_saved_as' => $data[11]
+	                                );
 
-	                               $rec1 = array('item_name' => $data[1], 'item_category_id' => $data[2]
-	                                   , 'item_details' => $data[3], 'item_point_up_rate' => $data[4]
-	                                   , 'item_expire_seconds' => $data[5], 'publish_start_date' => $data[6]
-	                                   , 'publish_end_date' => $data[7], 'del_flg' => $data[8], 'reg_date' => $data[9]
-	                                   , 'upd_date' => $data[10], 'photo_saved_as' => $data[11]
-	                               );
+	                                DB::insert('mst_item')->set($rec1)->execute();
+	                            } else {
 
-	                               DB::insert('mst_item')->set($rec1)->execute();
-	                           } else {
+	                                $rec2 = array('item_name' => $data[1], 'item_category_id' => $data[2]
+	                                    , 'item_details' => $data[3], 'item_point_up_rate' => $data[4]
+	                                    , 'item_expire_seconds' => $data[5], 'publish_start_date' => $data[6]
+	                                    , 'publish_end_date' => $data[7], 'del_flg' => $data[8], 'reg_date' => $data[9]
+	                                    , 'upd_date' => $data[10], 'photo_saved_as' => $data[11]
+	                                );
 
-	                               $rec2 = array('item_name' => $data[1], 'item_category_id' => $data[2]
-	                                   , 'item_details' => $data[3], 'item_point_up_rate' => $data[4]
-	                                   , 'item_expire_seconds' => $data[5], 'publish_start_date' => $data[6]
-	                                   , 'publish_end_date' => $data[7], 'del_flg' => $data[8], 'reg_date' => $data[9]
-	                                   , 'upd_date' => $data[10], 'photo_saved_as' => $data[11]
-	                               );
+	                                DB::update('mst_item')->set($rec2)->where('id',$data[0])->execute();
+	                            }
+	                        } else {
+	                            Response::redirect('admin/item');
+	                        }
+	                }
+	                fclose($fp);
+	                DB::commit_transaction();
+	                Session::set_flash('success', 'アップロードに成功しました。');
+	                Response::redirect('admin/item');
 
-	                               DB::update('mst_item')->set($rec2)->where('id',$data[0])->execute();
-	                           }
-                           } else {
-                               Session::set_flash('error', 'データ数が'.$limit.'を超えています。');
-                               Response::redirect('admin/item');
-                           }
-                       }
-                   }
-                   fclose($fp);
-                   DB::commit_transaction();
-                   Session::set_flash('success', 'アップロードに成功しました。');
-                   Response::redirect('admin/item');
-
-               }catch (Exception $e){
-                   DB::rollback_transaction();
-                   Session::set_flash('error', 'アップロードに失敗しました。');
-                   Response::redirect('admin/item');
-               }
-	       }
+	            }catch (Exception $e){
+	                DB::rollback_transaction();
+	                Session::set_flash('error', 'アップロードに失敗しました。');
+	                Response::redirect('admin/item');
+	            }
+	        }
 	    }
 	    else
-	   {
+	    {
 	        Session::set_flash('error', 'ファイルが選択されていません。');
 	    }
 
 	    Response::redirect('admin/item');
 	}
+
 
 }
